@@ -1,0 +1,15 @@
+services:
+  trading-engine:
+    image: trading-engine
+    build: .
+    container_name: trading-engine
+    env_file: ./.env
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./src:/app/src 
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
