@@ -1,0 +1,19 @@
+This file is ment for brainstorming and setting the guidelines for the project:
+
+1) Broker:
+    - Abstract broker class with:
+        1) Connect/Disconnect to Broker
+        2) Ask for portfolio state
+        3) Ask for asset price/historic
+        4) Send buy/sell request
+    - Alpaca broker class:
+        1) Different rules based on asset type (crypto or equities)
+
+2) Strategy Manager:
+    1) Gets the assets and metrics needed by a Strategy
+    2) Asks the assets' information based on 1)
+    3) Sends the infromation aquired in 2) to the Strategy
+
+3) Engine Manager:
+    1) Send the assets' information (coming from the Broker) to the Strategy Manager
+    2) Receive the Strategies prediction, transform it in buy/sell order and send to Broker
