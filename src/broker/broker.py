@@ -2,14 +2,6 @@ from abc import ABC, abstractmethod
 
 class Broker(ABC):
     @abstractmethod
-    def connect(self):
-        pass
-
-    @abstractmethod
-    def disconnect(self):
-        pass
-
-    @abstractmethod
     def get_portfolio_state(self):
         pass
 

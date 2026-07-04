@@ -29,4 +29,4 @@ USER quantuser
 EXPOSE 9000
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["python", "-m", "trading_engine"]
+CMD ["python", "-m", "src.main"]

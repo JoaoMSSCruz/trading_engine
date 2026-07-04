@@ -1,14 +1,19 @@
+import logging
+
+from alpaca.trading.client import TradingClient
+
 from .broker import Broker
 
+logger = logging.getLogger(__name__)
+
 class Alpaca(Broker):
-    def __init__(self):
-        pass
+    def __init__(self, api_key: str, secret_key: str):
+        self.trading_client = TradingClient(
+                                api_key=api_key,
+                                secret_key=secret_key,
+                            )
 
-    def connect(self):
-        pass
-
-    def disconnect(self):
-        pass
+        logger.warning("Alpaca TradingClient initialized with paper money.")
 
     def get_portfolio_state(self):
         pass
