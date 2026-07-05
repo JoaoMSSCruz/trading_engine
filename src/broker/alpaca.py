@@ -15,7 +15,7 @@ class Alpaca(Broker):
 
         logger.warning("Alpaca TradingClient initialized with paper money.")
 
-    def get_portfolio_state(self):
+    def get_portfolio_state(self): 
         pass
 
     def get_asset_price(self, asset_name: str):
