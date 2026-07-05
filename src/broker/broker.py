@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
+from typing import Any, List
+
+from ..models.position import Position
 
 class Broker(ABC):
     @abstractmethod
-    def get_portfolio_state(self):
+    def get_open_positions(self):
         pass
 
     @abstractmethod
@@ -15,4 +18,8 @@ class Broker(ABC):
     def send_order(self):
         '''TODO: Use interal class that represent an order
                 Have an Order as a parameter''' 
+        pass
+
+    @abstractmethod
+    def normalize_positions(self, external_positions: List[Any]) -> List[Position]:
         pass
