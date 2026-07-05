@@ -1,3 +1,5 @@
 mypy==1.10.0
 ruff==0.4.8
 alpaca-py==0.43.5
+pydantic-settings==2.14.2
+pydantic==2.13.4
