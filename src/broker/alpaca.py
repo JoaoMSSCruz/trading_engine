@@ -4,7 +4,7 @@ from typing import cast, List
 from alpaca.trading.client import TradingClient
 from alpaca.trading.models import Position as External_position
 
-from models.position import Position
+from ..models.position import Position
 
 from .broker import Broker
 
@@ -23,7 +23,7 @@ class Alpaca(Broker):
         raw_response = self.trading_client.get_all_positions()
 
         external_positions = cast(List[External_position], raw_response)
-        
+
         return self.normalize_positions(external_positions)
 
     def get_asset_price(self, asset_name: str):
@@ -38,6 +38,7 @@ class Alpaca(Broker):
         for external_position in external_positions:
             position = Position(
                 str(external_position.asset_id),
+                str(external_position.symbol),
                 int(external_position.qty)
             )
             normalized_positions.append(position)
