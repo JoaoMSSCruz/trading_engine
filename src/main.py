@@ -10,5 +10,3 @@ if __name__ == "__main__":
         settings.alpaca_api_key, 
         settings.alpaca_secret_key.get_secret_value()
         )
-    
-    logger.warning(alpaca_broker.get_asset_price("BTC"))

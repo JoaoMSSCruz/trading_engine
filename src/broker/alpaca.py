@@ -1,16 +1,16 @@
-from datetime import datetime
 import logging
-from typing import cast, List
+from typing import cast, Dict, List
 
+from alpaca.data.models.bars import Bar as Alpaca_bar
 from alpaca.data.historical import StockHistoricalDataClient
-from alpaca.data.timeframe import TimeFrame
 from alpaca.data.requests import StockBarsRequest
+from alpaca.data.timeframe import TimeFrame
 from alpaca.trading.client import TradingClient
 from alpaca.trading.models import Position as External_position
 
 from ..models.position import Position
+from ..models.bar import Bar
 from .broker import Broker
-
 
 logger = logging.getLogger(__name__)
 
@@ -34,17 +34,19 @@ class Alpaca(Broker):
 
         return self.normalize_positions(external_positions)
 
-    def get_asset_price(self, symbol: str, timeframe: TimeFrame, start: datetime, end: datetime):
-        # FIXME: Improve this. Perhaps create an internal representation
-        return self.stock_historical_data_client.get_stock_bars(
+    def get_asset_bars(self, symbol: str, timeframe: TimeFrame) -> List[Bar]:
+        alpaca_bars = self.stock_historical_data_client.get_stock_bars(
                                 StockBarsRequest(
                                     symbol_or_symbols=symbol,
-                                    start=start,
-                                    end=end,
                                     timeframe=timeframe
                                 )
 
                             )
+        alpaca_bars = cast(Dict[str, List[Alpaca_bar]], alpaca_bars)
+
+        internal_bars = self.alpaca_bars_to_internal_bars(symbol=symbol, alpaca_bars=alpaca_bars)
+
+        return internal_bars
 
     def send_order(self):
         # FIXME: Implement this
@@ -62,3 +64,21 @@ class Alpaca(Broker):
             normalized_positions.append(position)
         
         return normalized_positions
+    
+    @staticmethod
+    def alpaca_bars_to_internal_bars(symbol: str, alpaca_bars: Dict[str, List[Alpaca_bar]]):
+        internal_bars = []
+
+        for alpaca_bar in alpaca_bars[symbol]:
+            internal_bar = Bar(
+                            alpaca_bar.symbol,
+                            alpaca_bar.timestamp,
+                            alpaca_bar.open,
+                            alpaca_bar.high,
+                            alpaca_bar.low,
+                            alpaca_bar.close,
+                            alpaca_bar.volume
+                        )
+            internal_bars.append(internal_bar)
+
+        return internal_bars
