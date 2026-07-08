@@ -6,11 +6,14 @@ from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.trading.client import TradingClient
+from alpaca.trading.enums import OrderType, TimeInForce
 from alpaca.trading.models import Position as External_position
+from alpaca.trading.requests import OrderRequest
 
-from ..models.position import Position
-from ..models.bar import Bar
 from .broker import Broker
+from ..models.bar import Bar
+from ..models.position import Position
+from ..models.order import Order
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +51,10 @@ class Alpaca(Broker):
 
         return internal_bars
 
-    def send_order(self):
-        # FIXME: Implement this
-        pass
+    def send_order(self, internal_order: Order) -> None:
+        order_request = self.internal_order_to_order_request(internal_order=internal_order)
+
+        self.trading_client.submit_order(order_request)
 
     def normalize_positions(self, external_positions: List[External_position]) -> List[Position]:
         normalized_positions = list()
@@ -66,7 +70,7 @@ class Alpaca(Broker):
         return normalized_positions
     
     @staticmethod
-    def alpaca_bars_to_internal_bars(symbol: str, alpaca_bars: Dict[str, List[Alpaca_bar]]):
+    def alpaca_bars_to_internal_bars(symbol: str, alpaca_bars: Dict[str, List[Alpaca_bar]]) -> List[Bar]:
         internal_bars = []
 
         for alpaca_bar in alpaca_bars[symbol]:
@@ -82,3 +86,16 @@ class Alpaca(Broker):
             internal_bars.append(internal_bar)
 
         return internal_bars
+    
+    @staticmethod
+    def internal_order_to_order_request(internal_order: Order) -> OrderRequest:
+        # FIXME: Perhaps have the type and time_in_force done dynamically
+        order_request = OrderRequest(
+                            symbol=internal_order.get_symbol(),
+                            qty=internal_order.get_quantity(),
+                            type=OrderType.MARKET,
+                            time_in_force=TimeInForce.DAY,
+                            side=internal_order.get_side().value
+                        )
+        
+        return order_request

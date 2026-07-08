@@ -9,7 +9,7 @@ class Order:
     def get_symbol(self) -> str:
         return self.symbol
     
-    def def_quantity(self) -> float:
+    def get_quantity(self) -> float:
         return self.quantity
     
     def get_side(self) -> alpaca_side:
