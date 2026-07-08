@@ -18,6 +18,8 @@ from ..models.order import Order
 logger = logging.getLogger(__name__)
 
 class Alpaca(Broker):
+    """Internal representation of the Alpaca Broker API"""
+
     def __init__(self, api_key: str, secret_key: str):
         self.trading_client = TradingClient(
                                 api_key=api_key,
@@ -89,7 +91,7 @@ class Alpaca(Broker):
     
     @staticmethod
     def internal_order_to_order_request(internal_order: Order) -> OrderRequest:
-        # FIXME: Perhaps have the type and time_in_force done dynamically
+        # TODO: Perhaps have the type and time_in_force done dynamically
         order_request = OrderRequest(
                             symbol=internal_order.get_symbol(),
                             qty=internal_order.get_quantity(),

@@ -1,11 +1,14 @@
 from ..common import alpaca_side
 
 class Order:
+    """Internal representation of an order"""
+
     def __init__(self, symbol: str, quantity: float, side: alpaca_side):
         self.symbol = symbol
         self.quantity = quantity
         self.side = side
 
+    """Getters"""
     def get_symbol(self) -> str:
         return self.symbol
     
