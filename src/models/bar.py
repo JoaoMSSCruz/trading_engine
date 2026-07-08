@@ -1,6 +1,8 @@
 from datetime import datetime
 
 class Bar:
+    """Internal representation of an asset's bar"""
+
     def __init__(self, symbol: str, timestamp: datetime,
                  open: float, high: float, low: float,
                  close: float, volume: float):
@@ -12,6 +14,7 @@ class Bar:
         self.close = close
         self.volume = volume
 
+    """Getters"""
     def get_symbol(self) -> str:
         return self.symbol
     

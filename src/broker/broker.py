@@ -16,9 +16,7 @@ class Broker(ABC):
         pass
 
     @abstractmethod
-    def send_order(self, internal_order: Order):
-        '''TODO: Use interal class that represent an order
-                Have an Order as a parameter''' 
+    def send_order(self, internal_order: Order): 
         pass
 
     @abstractmethod
