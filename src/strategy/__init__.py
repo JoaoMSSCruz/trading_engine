@@ -1,7 +1,7 @@
 from .strategy import Strategy
-from .strategy_manager import Strategy_Manager
+from .strategy_manager import StrategyManager
 
 __all__ = [
     "Strategy",
-    "Strategy_Manager",
+    "StrategyManager",
 ]
