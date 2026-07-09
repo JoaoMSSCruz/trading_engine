@@ -6,7 +6,7 @@ from ..models.bar import Bar
 class Strategy(ABC):
     """Abstract representation of a Strategy"""
 
-    def __init__(self, strategy_name: str):
+    def __init__(self, strategy_name: str, **parameters):
         self.strategy_name = strategy_name
 
     @abstractmethod

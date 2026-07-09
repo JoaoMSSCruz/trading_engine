@@ -15,6 +15,7 @@ from ..models.bar import Bar
 from ..models.position import Position
 from ..models.order import Order
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Alpaca(Broker):
@@ -30,7 +31,7 @@ class Alpaca(Broker):
                                 secret_key=secret_key,
                             )
 
-        logger.warning("Alpaca TradingClient initialized with paper money.")
+        logger.info("Alpaca Broker initialized with paper money.")
 
     def get_open_positions(self) -> List[Position]: 
         raw_response = self.trading_client.get_all_positions()
@@ -40,6 +41,8 @@ class Alpaca(Broker):
         return self.normalize_positions(external_positions)
 
     def get_asset_bars(self, symbol: str, timeframe: TimeFrame) -> List[Bar]:
+        # FIXME: @timeframe must not be of alpaca API type, because the timeframe must be an internal object
+
         alpaca_bars = self.stock_historical_data_client.get_stock_bars(
                                 StockBarsRequest(
                                     symbol_or_symbols=symbol,
