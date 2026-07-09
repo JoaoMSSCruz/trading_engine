@@ -1,6 +1,6 @@
 import importlib
 import logging
-from typing import List
+from typing import Any, Dict, List
 
 from ..models.bar import Bar
 from .strategy import Strategy
@@ -14,7 +14,9 @@ class StrategyManager:
     def __init__(self):
         self.strategy: Strategy | None = None
 
-    def create_strategy(self, strategy_name: str, **parameters):
+        logger.info("Strategy Manager successfully created.")
+
+    def create_strategy(self, strategy_name: str, parameters: Dict[str, Any]):
         """We will assume that there will only be one instance of a Strategy"""
         try:
             strategy_module_path = STRATEGY_MAPPER[strategy_name]["strategy_module_path"]

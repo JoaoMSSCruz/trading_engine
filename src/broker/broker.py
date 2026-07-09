@@ -6,7 +6,11 @@ from ..models.position import Position
 
 class Broker(ABC):
     @abstractmethod
-    def get_open_positions(self):
+    def __init__(self, api_key: str, secret_key: str):
+        pass
+
+    @abstractmethod
+    def get_open_positions(self) -> List[Position]:
         pass
 
     @abstractmethod
