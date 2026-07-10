@@ -1,6 +1,12 @@
 from enum import Enum
-from alpaca.trading.enums import OrderSide
 
-class alpaca_side(Enum):
-    BUY = OrderSide.BUY
-    SELL = OrderSide.SELL
+class InternalSide(Enum):
+    BUY = "buy"
+    SELL = "sell"
+
+class InternalTimeframe(Enum):
+    MINUTE = "minute"
+    HOUR = "hour"
+    DAY = "day"
+    WEEK = "week"
+    MONTH = "month"   

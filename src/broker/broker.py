@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Any, List
 
+from ..common import InternalTimeframe
+from ..models.bar import Bar
 from ..models.order import Order
 from ..models.position import Position
+
 
 class Broker(ABC):
     @abstractmethod
@@ -14,15 +17,15 @@ class Broker(ABC):
         pass
 
     @abstractmethod
-    def get_asset_bars(self, asset_name: str):
-        '''TODO: Define a way to inform the interval of time
-                A good way would be to have a timeframe and a quantity''' 
+    def get_asset_bars(self, symbol: str, internal_timeframe: InternalTimeframe) -> List[Bar]:
+        '''TODO: Perhaps quantity or lookback would be necessary''' 
         pass
 
     @abstractmethod
-    def send_order(self, internal_order: Order): 
+    def send_order(self, internal_order: Order) -> None: 
         pass
 
     @abstractmethod
-    def normalize_positions(self, external_positions: List[Any]) -> List[Position]:
+    @staticmethod
+    def normalize_positions(external_positions: List[Any]) -> List[Position]:
         pass

@@ -6,11 +6,12 @@ from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.trading.client import TradingClient
-from alpaca.trading.enums import OrderType, TimeInForce
+from alpaca.trading.enums import OrderSide, OrderType, TimeInForce
 from alpaca.trading.models import Position as External_position
 from alpaca.trading.requests import OrderRequest
 
 from .broker import Broker
+from ..common import InternalSide, InternalTimeframe
 from ..models.bar import Bar
 from ..models.position import Position
 from ..models.order import Order
@@ -20,6 +21,17 @@ logger = logging.getLogger(__name__)
 
 class Alpaca(Broker):
     """Internal representation of the Alpaca Broker API"""
+    _SIDE_MAPPER = {
+        InternalSide.BUY: OrderSide.BUY,
+        InternalSide.SELL: OrderSide.SELL,
+    }
+    _TIMEFRAME_MAPPER = {
+        InternalTimeframe.MINUTE: TimeFrame.Minute,
+        InternalTimeframe.HOUR: TimeFrame.Hour,
+        InternalTimeframe.DAY: TimeFrame.Day,
+        InternalTimeframe.WEEK: TimeFrame.Week,
+        InternalTimeframe.MONTH: TimeFrame.Month,
+    }
 
     def __init__(self, api_key: str, secret_key: str):
         self.trading_client = TradingClient(
@@ -40,13 +52,13 @@ class Alpaca(Broker):
 
         return self.normalize_positions(external_positions)
 
-    def get_asset_bars(self, symbol: str, timeframe: TimeFrame) -> List[Bar]:
-        # FIXME: @timeframe must not be of alpaca API type, because the timeframe must be an internal object
+    def get_asset_bars(self, symbol: str, internal_timeframe: InternalTimeframe) -> List[Bar]:
+        alpaca_timeframe = self._TIMEFRAME_MAPPER[internal_timeframe]
 
         alpaca_bars = self.stock_historical_data_client.get_stock_bars(
                                 StockBarsRequest(
                                     symbol_or_symbols=symbol,
-                                    timeframe=timeframe
+                                    timeframe=alpaca_timeframe,
                                 )
 
                             )
@@ -57,18 +69,20 @@ class Alpaca(Broker):
         return internal_bars
 
     def send_order(self, internal_order: Order) -> None:
-        order_request = self.internal_order_to_order_request(internal_order=internal_order)
-
+        order_request = self.internal_order_to_order_request(
+                            internal_order=internal_order, 
+                            side_mapper=self._SIDE_MAPPER)
+        
         self.trading_client.submit_order(order_request)
 
-    def normalize_positions(self, external_positions: List[External_position]) -> List[Position]:
+    @staticmethod
+    def normalize_positions(external_positions: List[External_position]) -> List[Position]:
         normalized_positions = list()
-
         for external_position in external_positions:
             position = Position(
                 str(external_position.asset_id),
-                str(external_position.symbol),
-                int(external_position.qty)
+                external_position.symbol,
+                float(external_position.qty)
             )
             normalized_positions.append(position)
         
@@ -80,27 +94,36 @@ class Alpaca(Broker):
 
         for alpaca_bar in alpaca_bars[symbol]:
             internal_bar = Bar(
-                            alpaca_bar.symbol,
-                            alpaca_bar.timestamp,
-                            alpaca_bar.open,
-                            alpaca_bar.high,
-                            alpaca_bar.low,
-                            alpaca_bar.close,
-                            alpaca_bar.volume
+                            symbol=alpaca_bar.symbol,
+                            timestamp=alpaca_bar.timestamp,
+                            open=alpaca_bar.open,
+                            high=alpaca_bar.high,
+                            low=alpaca_bar.low,
+                            close=alpaca_bar.close,
+                            volume=alpaca_bar.volume
                         )
             internal_bars.append(internal_bar)
 
         return internal_bars
     
     @staticmethod
-    def internal_order_to_order_request(internal_order: Order) -> OrderRequest:
-        # TODO: Perhaps have the type and time_in_force done dynamically
+    def internal_order_to_order_request(
+        internal_order: Order,
+        side_mapper: Dict[InternalSide, OrderSide],
+        ) -> OrderRequest:
+
+        """ TODO: Perhaps have the type and time_in_force done dynamically.
+            This might not be needed since we will probably only need Day orders.
+            However, would be interesting to have them anyway.
+        """
+        alpaca_side = side_mapper[internal_order.get_side()]
+
         order_request = OrderRequest(
                             symbol=internal_order.get_symbol(),
                             qty=internal_order.get_quantity(),
                             type=OrderType.MARKET,
                             time_in_force=TimeInForce.DAY,
-                            side=internal_order.get_side().value
+                            side=alpaca_side
                         )
         
         return order_request

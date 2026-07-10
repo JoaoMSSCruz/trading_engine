@@ -30,4 +30,4 @@ class EngineSettings(BaseSettings):
     # Configuration for the pydantic read the env file directly
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
-settings = EngineSettings()
+settings = EngineSettings() # type: ignore (to ignore the error message, since it is only recognized in runtime)
