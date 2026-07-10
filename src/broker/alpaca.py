@@ -6,11 +6,12 @@ from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.trading.client import TradingClient
-from alpaca.trading.enums import OrderType, TimeInForce
+from alpaca.trading.enums import OrderSide, OrderType, TimeInForce
 from alpaca.trading.models import Position as External_position
 from alpaca.trading.requests import OrderRequest
 
 from .broker import Broker
+from ..common import InternalSide
 from ..models.bar import Bar
 from ..models.position import Position
 from ..models.order import Order
@@ -20,6 +21,10 @@ logger = logging.getLogger(__name__)
 
 class Alpaca(Broker):
     """Internal representation of the Alpaca Broker API"""
+    _SIDE_MAPPER = {
+        InternalSide.BUY: OrderSide.BUY,
+        InternalSide.SELL: OrderSide.SELL,
+    }
 
     def __init__(self, api_key: str, secret_key: str):
         self.trading_client = TradingClient(
@@ -57,13 +62,12 @@ class Alpaca(Broker):
         return internal_bars
 
     def send_order(self, internal_order: Order) -> None:
-        order_request = self.internal_order_to_order_request(internal_order=internal_order)
+        order_request = self.internal_order_to_order_request(internal_order=internal_order, side_mapper=self._SIDE_MAPPER)
 
         self.trading_client.submit_order(order_request)
 
     def normalize_positions(self, external_positions: List[External_position]) -> List[Position]:
         normalized_positions = list()
-
         for external_position in external_positions:
             position = Position(
                 str(external_position.asset_id),
@@ -93,14 +97,16 @@ class Alpaca(Broker):
         return internal_bars
     
     @staticmethod
-    def internal_order_to_order_request(internal_order: Order) -> OrderRequest:
+    def internal_order_to_order_request(internal_order: Order, side_mapper: Dict[InternalSide, OrderSide]) -> OrderRequest:
         # TODO: Perhaps have the type and time_in_force done dynamically
+        alpaca_side = side_mapper[internal_order.get_side()]
+
         order_request = OrderRequest(
                             symbol=internal_order.get_symbol(),
                             qty=internal_order.get_quantity(),
                             type=OrderType.MARKET,
                             time_in_force=TimeInForce.DAY,
-                            side=internal_order.get_side().value
+                            side=alpaca_side
                         )
         
         return order_request
