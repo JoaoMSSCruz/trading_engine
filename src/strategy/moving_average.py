@@ -4,8 +4,8 @@ from ..models.bar import Bar
 from .strategy import Strategy
 
 class MovingAverage(Strategy):
-    def __init__(self, period: int, symbol: str):
-        self.period = period
+    def __init__(self, lookback: int, symbol: str):
+        self.lookback = lookback
         self.symbol = symbol
 
     def run_strategy(self, bars: List[Bar]) -> Any:

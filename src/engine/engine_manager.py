@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 class EngineManager():
     def __init__(self, broker_name: str, strategy_name: str, strategy_parameters: Dict[str, Any]):
+        # TODO 15: Add timeframe, which is in the config's execution
         self.broker = self.create_broker(broker_name=broker_name)
         self.strategy_manager = self.create_strategy_manager(strategy_name=strategy_name, strategy_parameters=strategy_parameters)
 
@@ -57,3 +58,9 @@ class EngineManager():
         except Exception as e:
             logger.critical(f"Error creating strategy manager: {e}")
             raise
+
+    """ TODO 15: Create method that sleeps for [timeframe] and then wakes the strategy.
+        It might be a method "run" who calls a sleep method.
+    """
+
+    

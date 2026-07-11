@@ -25,7 +25,7 @@ class Broker(ABC):
     def send_order(self, internal_order: Order) -> None: 
         pass
 
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def normalize_positions(external_positions: List[Any]) -> List[Position]:
         pass
