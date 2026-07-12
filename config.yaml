@@ -8,4 +8,6 @@ strategy:
   name: "MovingAverage"
   parameters:
     lookback: 14
-    symbol: "AAPL"
+  symbols: [
+    "AAPL",
+  ]

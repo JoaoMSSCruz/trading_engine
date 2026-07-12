@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, List
+from typing import Any, Dict, List
 
 from ..models.bar import Bar
 
@@ -10,7 +10,7 @@ class Strategy(ABC):
         pass
 
     @abstractmethod
-    def get_weights(self, bars: List[Bar]) -> Any:
+    def get_weights(self, bars: Dict[str, List[Bar]]) -> Any:
         """TODO: Define the internal representation of the output of a strategy
             It should be a class Weights or something similar
         """

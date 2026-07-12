@@ -52,7 +52,16 @@ class Alpaca(Broker):
 
         return self.normalize_positions(external_positions)
 
+    def get_assets_bar(self, symbols: List[str], internal_timeframe: InternalTimeframe) -> Dict[str, List[Bar]]:
+        assets_bar = dict()
+
+        for symbol in symbols:
+            assets_bar[symbol] = self.get_asset_bars(symbol=symbol, internal_timeframe=internal_timeframe)
+
+        return assets_bar
+
     def get_asset_bars(self, symbol: str, internal_timeframe: InternalTimeframe) -> List[Bar]:
+        """FIXME: For now we can only trade stocks. Implement crypto and commodities trading"""
         alpaca_timeframe = self._TIMEFRAME_MAPPER[internal_timeframe]
 
         alpaca_bars = self.stock_historical_data_client.get_stock_bars(
@@ -64,7 +73,7 @@ class Alpaca(Broker):
                             )
         alpaca_bars = cast(Dict[str, List[Alpaca_bar]], alpaca_bars)
 
-        internal_bars = self.alpaca_bars_to_internal_bars(symbol=symbol, alpaca_bars=alpaca_bars)
+        internal_bars = self.alpaca_bars_to_internal_bars(alpaca_bars=alpaca_bars[symbol])
 
         return internal_bars
 
@@ -89,10 +98,10 @@ class Alpaca(Broker):
         return normalized_positions
     
     @staticmethod
-    def alpaca_bars_to_internal_bars(symbol: str, alpaca_bars: Dict[str, List[Alpaca_bar]]) -> List[Bar]:
-        internal_bars = []
+    def alpaca_bars_to_internal_bars(alpaca_bars: List[Alpaca_bar]) -> List[Bar]:
+        internal_bars = list()
 
-        for alpaca_bar in alpaca_bars[symbol]:
+        for alpaca_bar in alpaca_bars:
             internal_bar = Bar(
                             symbol=alpaca_bar.symbol,
                             timestamp=alpaca_bar.timestamp,

@@ -1,7 +1,6 @@
 import importlib
 import logging
-from typing import Any, Dict 
-import timeframe
+from typing import Any, Dict, List
 
 from ..broker.broker import Broker
 from ..broker.broker_mapper import BROKER_MAPPER
@@ -20,12 +19,14 @@ class EngineManager():
                 broker_name: str, 
                 timeframe: str, 
                 strategy_name: str,
-                strategy_parameters: Dict[str, Any]
+                strategy_parameters: Dict[str, Any],
+                symbols: List[str]
                 ):
         # TODO 15: Add timeframe, which is in the config's execution
         self.broker = self.create_broker(broker_name=broker_name)
         self.strategy_manager = self.create_strategy_manager(strategy_name=strategy_name, strategy_parameters=strategy_parameters)
         self.timeframe = InternalTimeframe(timeframe)
+        self.symbols = symbols
 
         logger.info("Engine Manager successfully created.")
 
@@ -81,5 +82,10 @@ class EngineManager():
     """ TODO 15: Create method that sleeps for [timeframe] and then wakes the strategy.
         It might be a method "run" who calls a sleep method.
     """
+    def run(self):
+        while True:
+            bars = self.broker.get_assets_bar(symbols=self.symbols, internal_timeframe=self.timeframe)
+            
+            self.strategy_manager.call_strategy(bars=bars)
 
     

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, List
+from typing import Any, Dict, List
 
 from ..common import InternalTimeframe
 from ..models.bar import Bar
@@ -14,6 +14,10 @@ class Broker(ABC):
 
     @abstractmethod
     def get_open_positions(self) -> List[Position]:
+        pass
+    
+    @abstractmethod
+    def get_assets_bar(self, symbols: List[str], internal_timeframe: InternalTimeframe) -> Dict[str, List[Bar]]:
         pass
 
     @abstractmethod

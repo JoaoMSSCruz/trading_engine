@@ -28,7 +28,7 @@ class StrategyManager:
             logger.critical(f"Error creating strategy: {e}")
             raise
 
-    def call_strategy(self, bars: List[Bar]):
+    def call_strategy(self, bars: Dict[str, List[Bar]]):
         """TODO: Return internal representation of strategy output"""
         if not self.strategy:
             raise RuntimeError("Calling strategy not yet created.")
