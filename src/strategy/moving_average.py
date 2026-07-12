@@ -8,6 +8,6 @@ class MovingAverage(Strategy):
         self.lookback = lookback
         self.symbol = symbol
 
-    def run_strategy(self, bars: List[Bar]) -> Any:
+    def get_weights(self, bars: List[Bar]) -> Any:
         """TODO: Implement this"""
         pass

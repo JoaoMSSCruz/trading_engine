@@ -4,7 +4,9 @@ from typing import Any, Dict
 
 from ..broker.broker import Broker
 from ..broker.broker_mapper import BROKER_MAPPER
+from ..strategy.strategy import Strategy
 from ..strategy.strategy_manager import StrategyManager
+from ..strategy.strategy_mapper import STRATEGY_MAPPER
 
 from ..config import settings
 
@@ -46,12 +48,21 @@ class EngineManager():
     @staticmethod
     def create_strategy_manager(strategy_name: str, strategy_parameters: Dict[str, Any]) -> StrategyManager:
         try:
-            strategy_manager = StrategyManager()
+            strategy_module_path = STRATEGY_MAPPER[strategy_name]["strategy_module_path"]
+            strategy_class_name = STRATEGY_MAPPER[strategy_name]["strategy_class_name"]
 
-            strategy_manager.create_strategy( 
-                            strategy_name=strategy_name,
-                            parameters=strategy_parameters
-                            )
+            module = importlib.import_module(strategy_module_path)
+
+            strategy_class = getattr(module, strategy_class_name)
+
+            if not issubclass(strategy_class, Strategy):
+                raise TypeError(f"Class {strategy_class_name} doesn't inherit class Strategy.")
+
+
+            strategy_manager = StrategyManager(
+                strategy_class=strategy_class,
+                parameters=strategy_parameters
+                )
 
             return strategy_manager
              
