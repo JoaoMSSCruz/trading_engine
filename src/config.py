@@ -1,18 +1,18 @@
-import logging
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
 from typing import Any, Dict
 import yaml
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from .models.logger import Logger
+
+logger = Logger.logger
 
 def load_config(file_path: str = "config.yaml") -> Dict[str, Any]:
     try:
         with open(file_path, "r") as file:
             config = yaml.safe_load(file)
         
-        logger.info(f"Config successfully loaded: {file_path}")
+        logger.debug(f"Config successfully loaded: {file_path}")
         return config
         
     except FileNotFoundError:

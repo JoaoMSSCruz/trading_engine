@@ -1,4 +1,3 @@
-import logging
 from typing import cast, Dict, List
 
 from alpaca.data.models import BarSet
@@ -14,11 +13,11 @@ from alpaca.trading.requests import OrderRequest
 from .broker import Broker
 from ..common import InternalSide, InternalTimeframe
 from ..models.bar import Bar
+from ..models.logger import Logger
 from ..models.position import Position
 from ..models.order import Order
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = Logger.logger
 
 class Alpaca(Broker):
     """Internal representation of the Alpaca Broker API"""
@@ -44,7 +43,7 @@ class Alpaca(Broker):
                                 secret_key=secret_key,
                             )
 
-        logger.info("Alpaca Broker initialized with paper money.")
+        logger.debug("Alpaca Broker initialized with paper money.")
 
     def get_open_positions(self) -> List[Position]: 
         raw_response = self.trading_client.get_all_positions()

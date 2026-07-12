@@ -2,7 +2,7 @@
 
 execution:
   broker: "Alpaca"
-  timeframe: "Hour"
+  timeframe: "Minute"
 
 strategy:
   name: "MovingAverage"
