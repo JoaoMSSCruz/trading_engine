@@ -2,12 +2,12 @@
 
 execution:
   broker: "Alpaca"
-  timeframe: "Hour"
+  timeframe: "Minute"
 
 strategy:
   name: "MovingAverage"
   parameters:
     lookback: 14
   symbols: [
-    "AAPL",
+    "BTC/USD",
   ]

@@ -1,10 +1,5 @@
-import logging
-
 from .config import load_config
 from .engine.engine_manager import EngineManager
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     config = load_config("config.yaml")
