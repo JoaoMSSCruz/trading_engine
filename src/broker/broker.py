@@ -21,11 +21,6 @@ class Broker(ABC):
         pass
 
     @abstractmethod
-    def get_asset_bars(self, symbol: str, internal_timeframe: InternalTimeframe) -> List[Bar]:
-        '''TODO: Perhaps quantity or lookback would be necessary''' 
-        pass
-
-    @abstractmethod
     def send_order(self, internal_order: Order) -> None: 
         pass
 

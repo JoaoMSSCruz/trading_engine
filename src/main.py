@@ -21,3 +21,5 @@ if __name__ == "__main__":
                                    strategy_parameters=strategy_parameters,
                                    symbols=symbols,
                                   )
+
+    engine_manager.run()

@@ -11,10 +11,14 @@ class InternalTimeframe(Enum):
     WEEK = "Week"
     MONTH = "Month"   
 
-    to_seconds = {
-        MINUTE: 60,
-        HOUR: 3600,
-        DAY: 86400,
-        WEEK: 604800,
-        MONTH: 2592000, # FIXME: This is calculated with 30 days. Can cause errors
-    }
+    @property
+    def to_seconds(self) -> float:
+        mapper = {
+            InternalTimeframe.MINUTE: 60,
+            InternalTimeframe.HOUR: 3600,
+            InternalTimeframe.DAY: 86400,
+            InternalTimeframe.WEEK: 604800,
+            InternalTimeframe.MONTH: 2592000, # FIXME: This is calculated with 30 days. Can cause errors
+        }
+
+        return mapper[self]

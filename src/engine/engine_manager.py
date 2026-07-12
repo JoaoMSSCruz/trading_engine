@@ -1,5 +1,6 @@
 import importlib
 import logging
+import time
 from typing import Any, Dict, List
 
 from ..broker.broker import Broker
@@ -87,5 +88,9 @@ class EngineManager():
             bars = self.broker.get_assets_bar(symbols=self.symbols, internal_timeframe=self.timeframe)
             
             self.strategy_manager.call_strategy(bars=bars)
+
+            logger.info(f"Sleeping for: {self.timeframe.value}")
+            time.sleep(self.timeframe.to_seconds)
+            
 
     

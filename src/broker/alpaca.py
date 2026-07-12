@@ -1,6 +1,7 @@
 import logging
 from typing import cast, Dict, List
 
+from alpaca.data.models import BarSet
 from alpaca.data.models.bars import Bar as Alpaca_bar
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
@@ -53,27 +54,27 @@ class Alpaca(Broker):
         return self.normalize_positions(external_positions)
 
     def get_assets_bar(self, symbols: List[str], internal_timeframe: InternalTimeframe) -> Dict[str, List[Bar]]:
-        assets_bar = dict()
+        """FIXME: For now we can only trade stocks, but crypto and commodities must be traded as well"""
 
-        for symbol in symbols:
-            assets_bar[symbol] = self.get_asset_bars(symbol=symbol, internal_timeframe=internal_timeframe)
-
-        return assets_bar
-
-    def get_asset_bars(self, symbol: str, internal_timeframe: InternalTimeframe) -> List[Bar]:
-        """FIXME: For now we can only trade stocks. Implement crypto and commodities trading"""
+        internal_bars = dict()
         alpaca_timeframe = self._TIMEFRAME_MAPPER[internal_timeframe]
 
-        alpaca_bars = self.stock_historical_data_client.get_stock_bars(
+        alpaca_barset = self.stock_historical_data_client.get_stock_bars(
                                 StockBarsRequest(
-                                    symbol_or_symbols=symbol,
+                                    symbol_or_symbols=symbols,
                                     timeframe=alpaca_timeframe,
                                 )
 
                             )
-        alpaca_bars = cast(Dict[str, List[Alpaca_bar]], alpaca_bars)
+        
+        if isinstance(alpaca_barset, BarSet):
+            alpaca_bars_dict = alpaca_barset.data
+        else:
+            alpaca_bars_dict = alpaca_barset
 
-        internal_bars = self.alpaca_bars_to_internal_bars(alpaca_bars=alpaca_bars[symbol])
+        for symbol in symbols:
+            if symbol in alpaca_bars_dict.keys():
+                internal_bars[symbol] = self.alpaca_bars_to_internal_bars(alpaca_bars=alpaca_bars_dict[symbol])
 
         return internal_bars
 
