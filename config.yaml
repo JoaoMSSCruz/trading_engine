@@ -9,5 +9,5 @@ strategy:
   parameters:
     lookback: 14
   symbols: [
-    "AAPL",
+    "BTC/USD",
   ]

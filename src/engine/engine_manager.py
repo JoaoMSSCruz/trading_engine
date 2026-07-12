@@ -79,13 +79,17 @@ class EngineManager():
 
     def run(self):
         """TODO: Implement dry run: a run that doesn't have real world consequences,
-        basically doesn't buy/sell. This is helpful for debug
+        basically doesn't buy/sell. This is helpful for debug.
+        This entity must be the one storing the bars, and then updating the list for
+        each strategy call.
         """
         while True:
             bars = self.broker.get_assets_bar(symbols=self.symbols, internal_timeframe=self.timeframe)
             
-            self.strategy_manager.call_strategy(bars=bars)
+            weights = self.strategy_manager.call_strategy(bars=bars)
 
+            logger.debug(f"Weights: {weights}.")
+            
             logger.debug(f"Sleeping for: {self.timeframe.value}")
             time.sleep(self.timeframe.to_seconds)
             

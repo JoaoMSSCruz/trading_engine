@@ -2,8 +2,8 @@ from typing import cast, Dict, List
 
 from alpaca.data.models import BarSet
 from alpaca.data.models.bars import Bar as Alpaca_bar
-from alpaca.data.historical import StockHistoricalDataClient
-from alpaca.data.requests import StockBarsRequest
+from alpaca.data.historical import CryptoHistoricalDataClient
+from alpaca.data.requests import CryptoBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, OrderType, TimeInForce
@@ -38,7 +38,7 @@ class Alpaca(Broker):
                                 api_key=api_key,
                                 secret_key=secret_key,
                             )
-        self.stock_historical_data_client = StockHistoricalDataClient(
+        self.stock_historical_data_client = CryptoHistoricalDataClient(
                                 api_key=api_key,
                                 secret_key=secret_key,
                             )
@@ -53,13 +53,13 @@ class Alpaca(Broker):
         return self.normalize_positions(external_positions)
 
     def get_assets_bar(self, symbols: List[str], internal_timeframe: InternalTimeframe) -> Dict[str, List[Bar]]:
-        """FIXME: For now we can only trade stocks, but crypto and commodities must be traded as well"""
+        """FIXME: For now we can only trade crypto, but stocks and commodities must be traded as well"""
 
         internal_bars = dict()
         alpaca_timeframe = self._TIMEFRAME_MAPPER[internal_timeframe]
 
-        alpaca_barset = self.stock_historical_data_client.get_stock_bars(
-                                StockBarsRequest(
+        alpaca_barset = self.stock_historical_data_client.get_crypto_bars(
+                                CryptoBarsRequest(
                                     symbol_or_symbols=symbols,
                                     timeframe=alpaca_timeframe,
                                 )
