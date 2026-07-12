@@ -1,8 +1,13 @@
+# The timeframe must be in "InternalTimeframe" 
+
 execution:
   broker: "Alpaca"
+  timeframe: "Hour"
 
 strategy:
   name: "MovingAverage"
   parameters:
-    period: 14
-    symbol: "AAPL"
+    lookback: 14
+  symbols: [
+    "AAPL",
+  ]
