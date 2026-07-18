@@ -6,8 +6,9 @@ execution:
 
 strategy:
   name: "MovingAverage"
+  lookback: 14
   parameters:
-    lookback: 14
+    threshold: 1.5
   symbols: [
     "BTC/USD",
   ]

@@ -43,7 +43,7 @@ class Alpaca(Broker):
                                 secret_key=secret_key,
                             )
 
-        logger.debug("Alpaca Broker initialized with paper money.")
+        logger.info("Alpaca Broker initialized with paper money.")
 
     def get_open_positions(self) -> List[Position]: 
         raw_response = self.trading_client.get_all_positions()

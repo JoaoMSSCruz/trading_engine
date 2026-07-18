@@ -11,7 +11,7 @@ class StrategyManager:
     
     def __init__(self, strategy_class: type[Strategy], parameters: Dict[str, Any]):
         self.create_strategy(strategy_class=strategy_class, parameters=parameters)
-        logger.debug("Strategy Manager successfully created.")
+        logger.info("Strategy Manager successfully created.")
 
     def create_strategy(self, strategy_class: type[Strategy], parameters: Dict[str, Any]):
         """We will assume that there will only be one instance of a Strategy"""
@@ -22,7 +22,7 @@ class StrategyManager:
 
             self.strategy = strategy_instance
 
-            logger.debug(f"Strategy {strategy_class.__name__} successfully created.")
+            logger.info(f"Strategy {strategy_class.__name__} successfully created.")
              
         except Exception as e:
             logger.critical(f"Error creating strategy: {e}")

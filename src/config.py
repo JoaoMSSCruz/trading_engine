@@ -12,7 +12,7 @@ def load_config(file_path: str = "config.yaml") -> Dict[str, Any]:
         with open(file_path, "r") as file:
             config = yaml.safe_load(file)
         
-        logger.debug(f"Config successfully loaded: {file_path}")
+        logger.info(f"Config successfully loaded: {file_path}")
         return config
         
     except FileNotFoundError:
