@@ -1,28 +1,37 @@
+import importlib
 from typing import Any, Dict, List
 
 from ..models.bar import Bar
 from ..models.logger import Logger
-from .strategy import Strategy
+from .strategies.strategy import Strategy
+from .strategies.strategy_mapper import STRATEGY_MAPPER
 
 logger = Logger.logger
 
 class StrategyManager:
     """Entity that manages the internal strategies"""
     
-    def __init__(self, strategy_class: type[Strategy], parameters: Dict[str, Any]):
-        self.create_strategy(strategy_class=strategy_class, parameters=parameters)
+    def __init__(self, strategy_name: str, **parameters):
+        self.strategy = self.create_strategy(strategy_name=strategy_name, **parameters)
         logger.info("Strategy Manager successfully created.")
 
-    def create_strategy(self, strategy_class: type[Strategy], parameters: Dict[str, Any]):
+    def create_strategy(self, strategy_name: str, **parameters) -> Strategy:
         """We will assume that there will only be one instance of a Strategy"""
         try:
+            strategy_module_path = STRATEGY_MAPPER[strategy_name]["strategy_module_path"]
+            strategy_class_name = STRATEGY_MAPPER[strategy_name]["strategy_class_name"]
 
-            strategy_instance = strategy_class(**parameters)
+            module = importlib.import_module(strategy_module_path)
+
+            strategy_class = getattr(module, strategy_class_name)
+
+            if not issubclass(strategy_class, Strategy):
+                raise TypeError(f"Class {strategy_class_name} doesn't inherit class Strategy.")
 
 
-            self.strategy = strategy_instance
+            strategy = strategy_class(**parameters)
 
-            logger.info(f"Strategy {strategy_class.__name__} successfully created.")
+            return strategy
              
         except Exception as e:
             logger.critical(f"Error creating strategy: {e}")

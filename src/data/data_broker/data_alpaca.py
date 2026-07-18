@@ -28,7 +28,7 @@ class DataAlpaca(DataBroker):
                                 secret_key=secret_key,
                             )
 
-        logger.info("Alpaca Broker initialized with paper money.")
+        logger.info("Alpaca Data Broker initialized with paper money.")
 
     def get_assets_bars(self, 
                         symbols: List[str],

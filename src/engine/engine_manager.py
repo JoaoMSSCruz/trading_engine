@@ -1,14 +1,12 @@
-import importlib
 import time
 from typing import Any, Dict, List
 
 from ..data.data_manager import DataManager
 from ..common import InternalTimeframe
 from ..config import settings
+from ..execution.execution_manager import ExecutionManager
 from ..models.logger import Logger
-from ..strategy.strategy import Strategy
 from ..strategy.strategy_manager import StrategyManager
-from ..strategy.strategy_mapper import STRATEGY_MAPPER
 
 logger = Logger.logger
 
@@ -22,7 +20,9 @@ class EngineManager():
                 symbols: List[str]
                 ):
         self.data_manager = self.create_data_manager(broker_name=broker_name)
-        self.strategy_manager = self.create_strategy_manager(strategy_name=strategy_name, strategy_parameters=strategy_parameters)
+        self.strategy_manager = self.create_strategy_manager(strategy_name=strategy_name,
+                                                             **strategy_parameters)
+        self.execution_manager = self.create_execution_manager(broker_name=broker_name)
         self.lookback = int(strategy_lookback)
         self.timeframe = InternalTimeframe(timeframe)
         self.symbols = symbols
@@ -42,32 +42,35 @@ class EngineManager():
             return data_manager
              
         except Exception as e:
-            logger.critical(f"Error creating broker: {e}")
+            logger.critical(f"Error creating data broker: {e}")
             raise
     
     @staticmethod
-    def create_strategy_manager(strategy_name: str, strategy_parameters: Dict[str, Any]) -> StrategyManager:
-        try:
-            strategy_module_path = STRATEGY_MAPPER[strategy_name]["strategy_module_path"]
-            strategy_class_name = STRATEGY_MAPPER[strategy_name]["strategy_class_name"]
-
-            module = importlib.import_module(strategy_module_path)
-
-            strategy_class = getattr(module, strategy_class_name)
-
-            if not issubclass(strategy_class, Strategy):
-                raise TypeError(f"Class {strategy_class_name} doesn't inherit class Strategy.")
-
-
-            strategy_manager = StrategyManager(
-                strategy_class=strategy_class,
-                parameters=strategy_parameters
-                )
+    def create_strategy_manager(strategy_name: str, **strategy_parameters) -> StrategyManager:
+        try:    
+            strategy_manager = StrategyManager(strategy_name=strategy_name,
+                                               **strategy_parameters)
 
             return strategy_manager
              
         except Exception as e:
             logger.critical(f"Error creating strategy manager: {e}")
+            raise
+
+    @staticmethod
+    def create_execution_manager(broker_name:str) -> ExecutionManager:
+        try:
+            broker_credentials = {
+                "api_key": settings.api_key,
+                "secret_key": settings.secret_key.get_secret_value()
+            }
+            execution_manager = ExecutionManager(broker_name=broker_name,
+                                                 **broker_credentials
+                                                 )
+            
+            return execution_manager
+        except Exception as e:
+            logger.critical(f"Error creating execution broker: {e}")
             raise
 
     def run(self):
@@ -87,6 +90,8 @@ class EngineManager():
             
             logger.info(f"Sleeping for: {self.timeframe.value}")
             time.sleep(self.timeframe.to_seconds)
+
+            break
             
 
     
