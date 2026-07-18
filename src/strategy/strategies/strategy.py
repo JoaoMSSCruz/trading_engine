@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
-from ..models.bar import Bar
-from ..models.weights import Weights
+from ...models.bar import Bar
+from ...models.weights import Weights
 
 class Strategy(ABC):
     """Abstract representation of a Strategy"""

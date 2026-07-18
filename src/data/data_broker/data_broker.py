@@ -1,0 +1,23 @@
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List
+
+from ...common import InternalTimeframe
+from ...models.bar import Bar
+
+class DataBroker(ABC):
+    @abstractmethod
+    def __init__(self, **parameters):
+        pass
+
+    @abstractmethod
+    def get_assets_bars(self, 
+                        symbols: List[str],
+                        internal_timeframe: InternalTimeframe,
+                        limit: int
+                        ) -> Dict[str, List[Bar]]:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def broker_bars_to_internal_bars(bars: List[Any]) -> List[Bar]:
+        pass
