@@ -79,7 +79,10 @@ class EngineManager():
         This entity must be the one storing the bars, and then updating the list for
         each strategy call.
         """
+        portfolio = self.execution_manager.get_portfolio()
+        logger.info(f"Portfolio: {portfolio}")
         while True:
+            logger.info("Strating Run Cycle:")
             bars = self.data_manager.get_assets_bars(symbols=self.symbols, 
                                                      internal_timeframe=self.timeframe,
                                                      limit=self.lookback)

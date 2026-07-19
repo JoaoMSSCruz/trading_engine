@@ -14,3 +14,10 @@ class Portfolio:
 
     def get_cash(self) -> float:
         return self.cash
+    
+    def __str__(self) -> str:
+        string = ""
+        string += f"Cash: {self.cash}"
+        for position in self.positions:
+            string += f", {position}"
+        return string

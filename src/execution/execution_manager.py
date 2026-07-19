@@ -6,6 +6,7 @@ from .execution_broker.execution_broker import ExecutionBroker
 from .execution_broker.mapper import BROKER_MAPPER
 from ..models.logger import Logger
 from ..models.order import Order
+from ..models.portfolio import Portfolio
 
 logger = Logger.logger
 
@@ -34,6 +35,9 @@ class ExecutionManager:
         except Exception as e:
             logger.critical(f"Error creating broker: {e}")
             raise
+
+    def get_portfolio(self) -> Portfolio:
+        return self.execution_broker.get_portfolio()
 
     def submit_orders(self, internal_orders: List[Order]) -> None:
         self.execution_broker.submit_orders(internal_orders=internal_orders)
