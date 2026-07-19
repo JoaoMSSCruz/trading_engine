@@ -1,13 +1,14 @@
-from typing import List
-
+from typing import cast, List
 
 from ...common import InternalSide
 from .execution_broker import ExecutionBroker
 from ...models.logger import Logger
 from ...models.order import Order
+from ...models.position import Position
 
 from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, OrderType, TimeInForce
+from alpaca.trading.models import Position as BrokerPosition, TradeAccount
 from alpaca.trading.requests import OrderRequest
 
 logger = Logger.logger
@@ -26,6 +27,24 @@ class ExecutionAlpaca(ExecutionBroker):
                             )
 
         logger.info("Alpaca Execution Broker initialized with paper money.")
+
+    def get_positions(self) -> List[Position]:
+        broker_positions = self.trading_client.get_all_positions()
+
+        broker_positions= cast(List[BrokerPosition], broker_positions)
+
+        internal_positions = self.broker_positions_to_internal_positions(broker_positions=broker_positions)
+        
+        return internal_positions
+
+    def get_cash(self) -> float:
+        account = self.trading_client.get_account()
+
+        account = cast(TradeAccount, account)
+
+        cash = float(account.cash or 0.0)
+
+        return cash
 
     def submit_orders(self, internal_orders: List[Order]) -> None:
         alpaca_orders = self.internal_orders_to_broker_orders(internal_orders=internal_orders)
@@ -49,3 +68,15 @@ class ExecutionAlpaca(ExecutionBroker):
             alpaca_orders.append(alpaca_order)
 
         return alpaca_orders
+    
+    def broker_positions_to_internal_positions(self, 
+                                               broker_positions: List[BrokerPosition]
+                                               ) -> List[Position]:
+        internal_positions = list()
+
+        for broker_position in broker_positions:
+            internal_position = Position(uid=str(broker_position.asset_id),
+                                         symbol=broker_position.symbol,
+                                         quantity=float(broker_position.qty))
+            internal_positions.append(internal_position)
+        return internal_positions

@@ -19,4 +19,4 @@ if __name__ == "__main__":
                                    symbols=symbols,
                                   )
 
-    engine_manager.run()
+    engine_manager.start_engine()
