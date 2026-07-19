@@ -73,13 +73,16 @@ class EngineManager():
             logger.critical(f"Error creating execution broker: {e}")
             raise
 
-    def run(self):
+    def start_engine(self):
         """TODO: Implement dry run: a run that doesn't have real world consequences,
         basically doesn't buy/sell. This is helpful for debug.
         This entity must be the one storing the bars, and then updating the list for
         each strategy call.
         """
+        portfolio = self.execution_manager.get_portfolio()
+        logger.info(f"Portfolio: {portfolio}")
         while True:
+            logger.info("Strating Run Cycle:")
             bars = self.data_manager.get_assets_bars(symbols=self.symbols, 
                                                      internal_timeframe=self.timeframe,
                                                      limit=self.lookback)
@@ -91,7 +94,6 @@ class EngineManager():
             logger.info(f"Sleeping for: {self.timeframe.value}")
             time.sleep(self.timeframe.to_seconds)
 
-            break
             
 
     

@@ -1,5 +1,5 @@
 import importlib
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from ..models.bar import Bar
 from ..models.logger import Logger

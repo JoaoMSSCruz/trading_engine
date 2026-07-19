@@ -18,4 +18,4 @@ class Position:
 
     """Class methods"""
     def __str__(self):
-        return f"Symbol: {self.symbol}, Quantity: {self.quantity}"
+        return f"{self.symbol}: {self.quantity}"
