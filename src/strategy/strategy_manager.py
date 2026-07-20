@@ -39,7 +39,6 @@ class StrategyManager:
             raise
 
     def call_strategy(self, bars: Dict[str, List[Bar]]) -> Weights:
-        """TODO: Return internal representation of strategy output"""
         """TODO: Implement a initial setup of a strategy"""
         if not self.strategy:
             raise RuntimeError("Calling strategy not yet created.")

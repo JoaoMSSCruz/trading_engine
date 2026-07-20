@@ -1,6 +1,5 @@
 # The timeframe must be in "InternalTimeframe" 
-
-execution:
+data:
   broker: "Alpaca"
   timeframe: "Minute"
 
@@ -8,7 +7,11 @@ strategy:
   name: "MovingAverage"
   lookback: 14
   parameters:
-    threshold: 1.5
+    threshold: 1.1
   symbols: [
     "BTC/USD",
   ]
+
+execution:
+  broker: "Alpaca"
+  timeframe: "Minute"

@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 from .position import Position
 
@@ -7,17 +7,20 @@ class Portfolio:
                 positions: List[Position],
                 cash: float):
         self.cash = cash
-        self.positions = positions
+        self.positions = self.positions_to_dict(positions=positions)
 
-    def get_positions(self) -> List[Position]:
-        return self.positions
+    @staticmethod
+    def positions_to_dict(positions: List[Position]) -> Dict[str, Position]:
+        positions_dict = dict()
+        for position in positions:
+            positions_dict[position.get_symbol()] = position
+        return positions_dict
+
+    def get_position(self, symbol: str) -> Position | None:
+        if symbol in self.positions:
+            return self.positions[symbol]
+        return None
 
     def get_cash(self) -> float:
         return self.cash
     
-    def __str__(self) -> str:
-        string = ""
-        string += f"Cash: {self.cash}"
-        for position in self.positions:
-            string += f", {position}"
-        return string

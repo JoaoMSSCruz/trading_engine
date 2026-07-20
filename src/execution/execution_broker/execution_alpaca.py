@@ -49,10 +49,8 @@ class ExecutionAlpaca(ExecutionBroker):
     def submit_orders(self, internal_orders: List[Order]) -> None:
         alpaca_orders = self.internal_orders_to_broker_orders(internal_orders=internal_orders)
 
-        """FIXME: Commenting for now so the engine doesn't trade 
         for alpaca_order in alpaca_orders:
             self.trading_client.submit_order(alpaca_order)
-        """
 
     def internal_orders_to_broker_orders(self, internal_orders: List[Order]) -> List[OrderRequest]:
         alpaca_orders = list()
@@ -60,7 +58,7 @@ class ExecutionAlpaca(ExecutionBroker):
         for internal_order in internal_orders:
             internal_side = internal_order.get_side()
             alpaca_order = OrderRequest(symbol=internal_order.get_symbol(),
-                                        qty=internal_order.get_quantity(),
+                                        notional=internal_order.get_notional(),
                                         side=self._SIDE_MAPPER[internal_side],
                                         type=OrderType.MARKET, #FIXME: Make this not hardcoded
                                         time_in_force=TimeInForce.GTC #FIXME: Make this not hardcoded

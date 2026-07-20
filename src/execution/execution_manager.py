@@ -1,9 +1,10 @@
 import importlib
-from typing import List
+from typing import Dict, List, Tuple
 
+from ..common import InternalSide, InternalTimeframe
 from .execution_broker.execution_broker import ExecutionBroker
-
 from .execution_broker.mapper import BROKER_MAPPER
+from ..models.bar import Bar
 from ..models.logger import Logger
 from ..models.order import Order
 from ..models.portfolio import Portfolio
@@ -41,12 +42,81 @@ class ExecutionManager:
     def get_portfolio(self) -> Portfolio:
         return self.execution_broker.get_portfolio()
 
-    def execute(self, weights: Weights) -> None:
-        orders = self.weights_to_orders(weights=weights)
+    def execute(self, weights: Weights, bars: Dict[str, List[Bar]], timeframe: InternalTimeframe) -> None:
+        #FIXME: Handle Errors
+        self.portfolio = self.get_portfolio()
+
+        portfolio_value = self.calculate_portoflio_value(bars=bars)
+
+        total_value = portfolio_value[0]
+        positions_value = portfolio_value[1]
+
+        future_values = self.weights_to_notionals(weights=weights,
+                                                  total_value=total_value,
+                                                  )
+        
+        orders = self.convert_deltas_to_orders(positions_value=positions_value,
+                                               future_values=future_values,
+                                               timeframe=timeframe
+                                               ) 
+
         self.submit_orders(orders=orders)
 
-    def weights_to_orders(self, weights) -> List[Order]:
-        pass
+
+    def convert_deltas_to_orders(self, 
+                                 positions_value: Dict[str, float], 
+                                 future_values: Dict[str, float], 
+                                 timeframe: InternalTimeframe
+                                 ) -> List[Order]:
+        orders = list()
+
+        for symbol, future_value in future_values.items():
+            current_value = positions_value.get(symbol, 0.0)
+            side = InternalSide.BUY
+            delta = future_value - current_value
+
+            if delta == 0:
+                continue
+            if delta < 0:
+                delta *= -1
+                side = InternalSide.SELL
+
+            order = Order(symbol=symbol,
+                          notional=delta,
+                          side=side,
+                          timeframe=timeframe)
+            orders.append(order)
+        return orders
+
+
+    def weights_to_notionals(self, weights: Weights, total_value: float) -> Dict[str, float]:
+        assets_notionals = dict()
+
+        for symbol, weight in weights.get_weights().items():
+            assets_notionals[symbol] = weight * total_value
+
+        return assets_notionals
 
     def submit_orders(self, orders: List[Order]) -> None:
         self.execution_broker.submit_orders(internal_orders=orders)
+
+    """FIXME: Some values, such as the portfolio's value, should be calculate by the Portfolio"""
+    def calculate_portoflio_value(self, bars: Dict[str, List[Bar]]) -> Tuple[float, Dict[str, float]]:
+        #FIXME: Handle Errors and make it cleaner
+        positions_value = dict()
+        
+        total_value = self.portfolio.get_cash()
+        for symbol, bar_objects in bars.items():
+            bar = bar_objects.pop()
+            position = self.portfolio.get_position(symbol=symbol)
+            if position is None:
+                positions_value[symbol] = 0.0
+                continue
+            position_value = bar.get_close() * position.get_quantity()
+            
+            positions_value[symbol] = position_value
+
+            total_value += position_value
+
+        return (total_value, positions_value)
+
