@@ -5,12 +5,12 @@ class Order:
 
     def __init__(
         self, symbol: str, 
-        quantity: float, 
+        notional: float, 
         side: InternalSide, 
         timeframe: InternalTimeframe):
 
         self.symbol = symbol
-        self.quantity = quantity
+        self.notional = notional
         self.side = side
         self.timeframe = timeframe
 
@@ -18,8 +18,8 @@ class Order:
     def get_symbol(self) -> str:
         return self.symbol
     
-    def get_quantity(self) -> float:
-        return self.quantity
+    def get_notional(self) -> float:
+        return self.notional
     
     def get_side(self) -> InternalSide:
         return self.side
@@ -28,4 +28,4 @@ class Order:
         return self.timeframe
 
     def __str__(self):
-        return f"Symbol: {self.symbol}, Quantity: {self.quantity}, Side: {self.side.value}, Timeframe: {self.timeframe}"
+        return f"Symbol: {self.symbol}, Notional: {self.notional}, Side: {self.side.value}, Timeframe: {self.timeframe}"

@@ -3,6 +3,7 @@ from typing import Dict, List
 
 from ..models.bar import Bar
 from ..models.logger import Logger
+from ..models.weights import Weights
 from .strategies.strategy import Strategy
 from .strategies.strategy_mapper import STRATEGY_MAPPER
 
@@ -37,14 +38,14 @@ class StrategyManager:
             logger.critical(f"Error creating strategy: {e}")
             raise
 
-    def call_strategy(self, bars: Dict[str, List[Bar]]):
-        """TODO: Return internal representation of strategy output"""
+    def call_strategy(self, bars: Dict[str, List[Bar]]) -> Weights:
         """TODO: Implement a initial setup of a strategy"""
         if not self.strategy:
             raise RuntimeError("Calling strategy not yet created.")
         if not bars:
+            #FIXME: Create error handling
             logger.warning("No weights available.")
-            return {}
+        
         return self.strategy.get_weights(bars=bars)
 
             

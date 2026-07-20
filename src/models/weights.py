@@ -4,6 +4,9 @@ class Weights:
     def __init__(self, weights: Dict[str, float]):
         self.weights = weights
 
+    def get_weights(self) -> Dict[str, float]:
+        return self.weights
+
     def __str__(self) -> str:
         weights_str = ""
         for symbol, weight in self.weights.items():
@@ -19,3 +22,5 @@ class Weights:
         if weight_total != 1:
             return False
         return True
+    
+    

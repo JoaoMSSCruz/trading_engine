@@ -12,20 +12,23 @@ logger = Logger.logger
 
 class EngineManager():
     def __init__(self, 
-                broker_name: str, 
-                timeframe: str, 
+                data_broker_name: str, 
+                data_timeframe: str, 
                 strategy_name: str,
                 strategy_lookback: str,
                 strategy_parameters: Dict[str, Any],
-                symbols: List[str]
+                symbols: List[str],
+                execution_broker_name: str,
+                execution_timeframe: str,
                 ):
-        self.data_manager = self.create_data_manager(broker_name=broker_name)
+        self.data_manager = self.create_data_manager(broker_name=data_broker_name)
+        self.data_timeframe = InternalTimeframe(data_timeframe)
         self.strategy_manager = self.create_strategy_manager(strategy_name=strategy_name,
                                                              **strategy_parameters)
-        self.execution_manager = self.create_execution_manager(broker_name=broker_name)
         self.lookback = int(strategy_lookback)
-        self.timeframe = InternalTimeframe(timeframe)
         self.symbols = symbols
+        self.execution_manager = self.create_execution_manager(broker_name=execution_broker_name)
+        self.execution_timeframe = InternalTimeframe(execution_timeframe)
         
         logger.info("Engine Manager successfully created.")
 
@@ -79,20 +82,22 @@ class EngineManager():
         This entity must be the one storing the bars, and then updating the list for
         each strategy call.
         """
-        portfolio = self.execution_manager.get_portfolio()
-        logger.info(f"Portfolio: {portfolio}")
         while True:
-            logger.info("Strating Run Cycle:")
+            logger.info("Starting Run Cycle:")
             bars = self.data_manager.get_assets_bars(symbols=self.symbols, 
-                                                     internal_timeframe=self.timeframe,
+                                                     internal_timeframe=self.data_timeframe,
                                                      limit=self.lookback)
             
             weights = self.strategy_manager.call_strategy(bars=bars)
 
             logger.info(f"Weights: {weights}.")
+
+            self.execution_manager.execute(weights=weights, 
+                                           bars=bars,
+                                           timeframe=self.execution_timeframe)
             
-            logger.info(f"Sleeping for: {self.timeframe.value}")
-            time.sleep(self.timeframe.to_seconds)
+            logger.info(f"Sleeping for: {self.execution_timeframe.value}")
+            time.sleep(self.execution_timeframe.to_seconds)
 
             
 
