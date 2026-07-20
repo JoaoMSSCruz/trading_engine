@@ -7,6 +7,7 @@ from .execution_broker.mapper import BROKER_MAPPER
 from ..models.logger import Logger
 from ..models.order import Order
 from ..models.portfolio import Portfolio
+from ..models.weights import Weights
 
 logger = Logger.logger
 
@@ -14,6 +15,7 @@ class ExecutionManager:
     def __init__(self, broker_name: str, **parameters):
         self.execution_broker = self.create_broker(broker_name=broker_name,
                                                    **parameters)
+        self.portfolio = self.get_portfolio()
 
     @staticmethod
     def create_broker(broker_name: str, **parameters) -> ExecutionBroker:
@@ -39,5 +41,12 @@ class ExecutionManager:
     def get_portfolio(self) -> Portfolio:
         return self.execution_broker.get_portfolio()
 
-    def submit_orders(self, internal_orders: List[Order]) -> None:
-        self.execution_broker.submit_orders(internal_orders=internal_orders)
+    def execute(self, weights: Weights) -> None:
+        orders = self.weights_to_orders(weights=weights)
+        self.submit_orders(orders=orders)
+
+    def weights_to_orders(self, weights) -> List[Order]:
+        pass
+
+    def submit_orders(self, orders: List[Order]) -> None:
+        self.execution_broker.submit_orders(internal_orders=orders)
