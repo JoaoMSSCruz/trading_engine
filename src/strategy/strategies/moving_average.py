@@ -9,7 +9,6 @@ class MovingAverage(Strategy):
         self.threshold = threshold
 
     def get_weights(self, bars: Dict[str, List[Bar]]) -> Weights:
-        """TODO: Implement this"""
         """There is only one asset being dealt in this strategy"""
         symbol_price_sum = 0
         counter = 0
