@@ -57,7 +57,8 @@ class ExecutionManager:
         
         orders = self.convert_deltas_to_orders(positions_value=positions_value,
                                                future_values=future_values,
-                                               timeframe=timeframe
+                                               timeframe=timeframe,
+                                               total_value=total_value
                                                ) 
 
         self.submit_orders(orders=orders)
@@ -66,20 +67,24 @@ class ExecutionManager:
     def convert_deltas_to_orders(self, 
                                  positions_value: Dict[str, float], 
                                  future_values: Dict[str, float], 
-                                 timeframe: InternalTimeframe
+                                 timeframe: InternalTimeframe,
+                                 total_value: float
                                  ) -> List[Order]:
         orders = list()
+
+        threshold = total_value * 0.005 # Let's establish the minimum Order size as 0.5% of Portfolio
 
         for symbol, future_value in future_values.items():
             current_value = positions_value.get(symbol, 0.0)
             side = InternalSide.BUY
             delta = future_value - current_value
 
-            if delta == 0:
-                continue
             if delta < 0:
                 delta *= -1
                 side = InternalSide.SELL
+
+            if delta < threshold:
+                continue
 
             order = Order(symbol=symbol,
                           notional=delta,

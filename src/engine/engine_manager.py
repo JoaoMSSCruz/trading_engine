@@ -81,6 +81,8 @@ class EngineManager():
         basically doesn't buy/sell. This is helpful for debug.
         This entity must be the one storing the bars, and then updating the list for
         each strategy call.
+            TODO: Implement a warmup. For this I will need to implement WebSocket.
+        This won't be easy, I am telling you already
         """
         while True:
             logger.info("Starting Run Cycle:")

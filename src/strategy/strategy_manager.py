@@ -46,6 +46,6 @@ class StrategyManager:
             #FIXME: Create error handling
             logger.warning("No weights available.")
         
-        return self.strategy.get_weights(bars=bars)
+        weights = self.strategy.get_weights(bars=bars)
 
-            
+        return weights
