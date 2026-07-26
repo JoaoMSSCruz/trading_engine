@@ -112,7 +112,9 @@ class ExecutionManager:
         
         total_value = self.portfolio.get_cash()
         for symbol, bar_objects in bars.items():
+            # Get the last known price of the asset
             bar = bar_objects.pop()
+            
             position = self.portfolio.get_position(symbol=symbol)
             if position is None:
                 positions_value[symbol] = 0.0

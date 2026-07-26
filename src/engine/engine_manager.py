@@ -82,7 +82,8 @@ class EngineManager():
         This entity must be the one storing the bars, and then updating the list for
         each strategy call.
             TODO: Implement a warmup. For this I will need to implement WebSocket.
-        This won't be easy, I am telling you already
+        Here is the plan:
+            1) Have a function that 
         """
         while True:
             logger.info("Starting Run Cycle:")
