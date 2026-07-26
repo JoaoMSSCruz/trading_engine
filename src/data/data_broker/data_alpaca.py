@@ -24,11 +24,15 @@ class DataAlpaca(DataBroker):
     }
 
     def __init__(self, api_key: str, secret_key: str):
-        self.crypto_historical_data_client = CryptoHistoricalDataClient(
+        self.create_historical_data_client(
                                 api_key=api_key,
-                                secret_key=secret_key,
+                                secret_key=secret_key
                             )
-
+        self.create_data_stream_client(
+                                api_key=api_key,
+                                secret_key=secret_key
+                            )   
+        
     def create_historical_data_client(self, api_key: str, secret_key: str):
         self.crypto_historical_data_client = CryptoHistoricalDataClient(
                                 api_key=api_key,
