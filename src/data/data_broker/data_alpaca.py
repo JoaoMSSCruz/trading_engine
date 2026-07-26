@@ -3,7 +3,7 @@ from typing import List, Dict
 from alpaca.data.historical import CryptoHistoricalDataClient, StockHistoricalDataClient
 from alpaca.data.live import CryptoDataStream, StockDataStream
 from alpaca.data.models import BarSet
-from alpaca.data.models.bars import Bar as Alpaca_bar
+from alpaca.data.models.bars import Bar as AlpacaBar
 from alpaca.data.requests import CryptoBarsRequest
 from alpaca.data.timeframe import TimeFrame
 
@@ -101,7 +101,7 @@ class DataAlpaca(DataBroker):
         return internal_bars
     
     @staticmethod
-    def broker_bars_to_internal_bars(alpaca_bars: List[Alpaca_bar]) -> List[Bar]:
+    def broker_bars_to_internal_bars(alpaca_bars: List[AlpacaBar]) -> List[Bar]:
         internal_bars = list()
 
         for alpaca_bar in alpaca_bars:

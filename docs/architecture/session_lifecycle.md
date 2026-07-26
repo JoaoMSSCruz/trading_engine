@@ -1,4 +1,4 @@
-Session Lifecycle & State Machine
+Session Lifecycle & State Machine  # noqa: E999
 
 This document outlines the daily lifecycle of the trading engine, detailing how the Engine Manager orchestrates time, data ingestion, and portfolio liquidation from pre-market to market close.
 
