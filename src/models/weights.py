@@ -22,8 +22,7 @@ class Weights:
         for weight in weights.values():
             weight_total += weight
         
-        """This check prevents weight sum != 1 and floating point deviations"""
-        if not math.isclose(weight_total, 1.0, rel_tol=1e-9): 
-            raise ValueError(f"Invalid weights: Sum of weights must be exactly 1.0, got {weight_total}")
+        if not (0 <= weight_total <= 1):
+            raise ValueError("Invalid weights: Sum of weights must be between 0 and 1.")
     
     

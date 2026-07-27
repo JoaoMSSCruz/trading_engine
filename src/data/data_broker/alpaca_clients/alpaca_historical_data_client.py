@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from alpaca.data.historical import CryptoHistoricalDataClient, StockHistoricalDataClient
-from alpaca.data.models.bars import Bar, BarSet
+from alpaca.data.models.bars import Bar as AlpacaBar, BarSet
 from alpaca.data.requests import CryptoBarsRequest, CryptoLatestBarRequest
 from alpaca.data.timeframe import TimeFrame
 
@@ -33,7 +33,7 @@ class AlpacaHistoricalDataClient(DataClient):
                             )
         logger.info("Historical Data Client successfully created.")
 
-    def load_warmup(self, lookback: int) -> Dict[str, List[Bar]]:
+    def load_warmup(self, lookback: int) -> Dict[str, List[AlpacaBar]]:
         # FIXME: Do not assume all the symbols are crypto
         barset = self.crypto_historical_data_client.get_crypto_bars(
                                 CryptoBarsRequest(
@@ -50,7 +50,7 @@ class AlpacaHistoricalDataClient(DataClient):
 
         return warmup
     
-    def get_latest(self) -> Dict[str, Bar]:
+    def get_latest(self) -> Dict[str, AlpacaBar]:
         # FIXME: Do not assume all the symbols are crypto
         latest = self.crypto_historical_data_client.get_crypto_latest_bar(
                                         CryptoLatestBarRequest(
