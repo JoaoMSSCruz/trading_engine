@@ -10,6 +10,11 @@ from ....models.logger import Logger
 
 logger = Logger.logger
 
+"""TODO-33: Implement get_latest, which will add a bar to the barset buffer.
+For this I will probably need a Deque and not a List.
+Also, it would be better to verify the time between the new bar and the last inserted;
+this way I can be sure that the time is correct."""
+
 class AlpacaDataStreamClient(DataClient):
     def __init__(self, 
                      api_key: str, 
