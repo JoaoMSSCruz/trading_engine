@@ -10,6 +10,22 @@ class DataBroker(ABC):
         pass
 
     @abstractmethod
+    def create_historical_data_client(self):
+        pass
+
+    @abstractmethod
+    def create_data_stream_client(self):
+        pass
+
+    @abstractmethod
+    def connect_data_stream(self):
+        pass
+
+    @abstractmethod
+    def desconnect_data_stream(self):
+        pass
+
+    @abstractmethod
     def get_assets_bars(self, 
                         symbols: List[str],
                         internal_timeframe: InternalTimeframe,

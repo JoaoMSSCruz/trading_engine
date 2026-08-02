@@ -1,8 +1,9 @@
 from typing import List, Dict
 
-from alpaca.data.historical import CryptoHistoricalDataClient
+from alpaca.data.historical import CryptoHistoricalDataClient, StockHistoricalDataClient
+from alpaca.data.live import CryptoDataStream, StockDataStream
 from alpaca.data.models import BarSet
-from alpaca.data.models.bars import Bar as Alpaca_bar
+from alpaca.data.models.bars import Bar as AlpacaBar
 from alpaca.data.requests import CryptoBarsRequest
 from alpaca.data.timeframe import TimeFrame
 
@@ -23,12 +24,51 @@ class DataAlpaca(DataBroker):
     }
 
     def __init__(self, api_key: str, secret_key: str):
+        self.create_historical_data_client(
+                                api_key=api_key,
+                                secret_key=secret_key
+                            )
+        self.create_data_stream_client(
+                                api_key=api_key,
+                                secret_key=secret_key
+                            )   
+        
+    def create_historical_data_client(self, api_key: str, secret_key: str):
         self.crypto_historical_data_client = CryptoHistoricalDataClient(
                                 api_key=api_key,
                                 secret_key=secret_key,
                             )
+        self.stock_historical_data_client = StockHistoricalDataClient(
+                                api_key=api_key,
+                                secret_key=secret_key
+                            )
+        logger.info("Historical Data Client successfully created.")
 
-        logger.info("Alpaca Data Broker initialized with paper money.")
+    def create_data_stream_client(self, api_key: str, secret_key: str):
+        self.crypto_data_stream_client = CryptoDataStream(
+                                api_key=api_key,
+                                secret_key=secret_key
+                            ) 
+        self.stock_data_stream_client = StockDataStream(
+                                api_key=api_key,
+                                secret_key=secret_key
+                            ) 
+        
+        logger.info("Stream Data Client successfully created.")
+
+    def connect_data_stream(self):
+        # FIXME: Find a way to connect only the necessary streams
+        self.crypto_data_stream_client.run()
+        self.stock_data_stream_client.run()
+
+        logger.info("Data Streams connected.")
+
+    def desconnect_data_stream(self):
+        # FIXME: Desconnect only the active streams
+        self.crypto_data_stream_client.stop()
+        self.stock_data_stream_client.stop()
+
+        logger.info("Data Streams desocnnected.")
 
     def get_assets_bars(self, 
                         symbols: List[str],
@@ -61,7 +101,7 @@ class DataAlpaca(DataBroker):
         return internal_bars
     
     @staticmethod
-    def broker_bars_to_internal_bars(alpaca_bars: List[Alpaca_bar]) -> List[Bar]:
+    def broker_bars_to_internal_bars(alpaca_bars: List[AlpacaBar]) -> List[Bar]:
         internal_bars = list()
 
         for alpaca_bar in alpaca_bars:
