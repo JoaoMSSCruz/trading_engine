@@ -1,5 +1,5 @@
 import asyncio
-from typing import cast, Dict, List
+from typing import Any, cast, Dict, List
 
 from alpaca.data.live import CryptoDataStream, StockDataStream
 from alpaca.data.models.bars import Bar as AlpacaBar
@@ -10,10 +10,11 @@ from ....models.logger import Logger
 
 logger = Logger.logger
 
-"""TODO-33: Implement get_latest, which will add a bar to the barset buffer.
-For this I will probably need a Deque and not a List.
-Also, it would be better to verify the time between the new bar and the last inserted;
-this way I can be sure that the time is correct."""
+"""TODO: Both 1 minute and 1 hour candles (of stocks) will have to be obtained via websocket.
+For the 1 hour warmup we won't need it, but for the latest we can't accept the 15 minute delay.
+One solution is to subscribe to 1 minute candles and acumulate the information until it reaches
+1 hour.
+"""
 
 class AlpacaDataStreamClient(DataClient):
     def __init__(self, 
@@ -80,6 +81,10 @@ class AlpacaDataStreamClient(DataClient):
                 self.reset_bar_buffer()
                 self.first_bar_event.clear() 
 
+    def get_latest(self) -> Dict[str, Any]:
+        #TODO: Implement this
+        return {}
+
 
     def add_bar_to_buffer(self, bar: AlpacaBar) -> None:
         symbol = bar.symbol
@@ -110,9 +115,4 @@ class AlpacaDataStreamClient(DataClient):
     def reset_timeframe_bars(self):
         self.timeframe_bars = 0
 
-
-    """TODO: Implement the methods from the abstarct class and find a way
-    to store the information. A good idea is to have a timelimit between candles.
-    For 1 minute candles, it could be 10 seconds. If after 10 seconds I haven't received
-    all the candles, clean the buffer and wait for the next group."""
         
