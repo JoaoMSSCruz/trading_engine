@@ -1,7 +1,8 @@
 import importlib
 from typing import Dict, List, Tuple
 
-from ..common.common import InternalSide, InternalTimeframe
+from ..common.asset_mapper import AssetMapper
+from ..common.common import InternalSide
 from .execution_broker.execution_broker import ExecutionBroker
 from .execution_broker.mapper import BROKER_MAPPER
 from ..models.bar import Bar
@@ -13,10 +14,17 @@ from ..models.weights import Weights
 logger = Logger.logger
 
 class ExecutionManager:
-    def __init__(self, broker_name: str, **parameters):
+    def __init__(
+                self, 
+                broker_name: str, 
+                asset_mapper: AssetMapper, 
+                **parameters
+            ) -> None:
         self.execution_broker = self.create_broker(broker_name=broker_name,
                                                    **parameters)
+        self.asset_mapper = asset_mapper
         self.portfolio = self.get_portfolio()
+        self.broker_name = broker_name
 
     @staticmethod
     def create_broker(broker_name: str, **parameters) -> ExecutionBroker:
@@ -42,7 +50,12 @@ class ExecutionManager:
     def get_portfolio(self) -> Portfolio:
         return self.execution_broker.get_portfolio()
 
-    def execute(self, weights: Weights, bars: Dict[str, List[Bar]], timeframe: InternalTimeframe) -> None:
+    def execute(
+            self, 
+            weights: Weights, 
+            bars: Dict[str, List[Bar]],
+            data_broker: str
+            ) -> None:
         #FIXME: Handle Errors
         self.portfolio = self.get_portfolio()
 
@@ -57,8 +70,8 @@ class ExecutionManager:
         
         orders = self.convert_deltas_to_orders(positions_value=positions_value,
                                                future_values=future_values,
-                                               timeframe=timeframe,
-                                               total_value=total_value
+                                               total_value=total_value,
+                                               data_broker=data_broker,
                                                ) 
 
         self.submit_orders(orders=orders)
@@ -67,8 +80,8 @@ class ExecutionManager:
     def convert_deltas_to_orders(self, 
                                  positions_value: Dict[str, float], 
                                  future_values: Dict[str, float], 
-                                 timeframe: InternalTimeframe,
-                                 total_value: float
+                                 total_value: float,
+                                 data_broker: str,
                                  ) -> List[Order]:
         orders = list()
 
@@ -86,10 +99,14 @@ class ExecutionManager:
             if delta < threshold:
                 continue
 
-            order = Order(symbol=symbol,
+            internal_asset = self.asset_mapper.get_internal_asset(broker_name=data_broker, symbol=symbol)
+            broker_symbol = self.asset_mapper.get_broker_symbol(internal_asset=internal_asset, broker_name=self.broker_name)
+
+            order = Order(symbol=broker_symbol,
                           notional=delta,
                           side=side,
-                          timeframe=timeframe)
+                        )
+            
             orders.append(order)
         return orders
 

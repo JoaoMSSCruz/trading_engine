@@ -21,30 +21,44 @@ class EngineManager():
                 strategy_parameters: Dict[str, Any],
                 symbols: List[str],
                 execution_broker_name: str,
-                execution_timeframe: str,
                 ):
-        self.asset_mapper = asset_mapper
-        self.data_manager = self.create_data_manager(broker_name=data_broker_name, 
-                                                     data_timeframe=InternalTimeframe(data_timeframe))
-        self.strategy_manager = self.create_strategy_manager(strategy_name=strategy_name,
-                                                             **strategy_parameters)
+        self.data_manager = self.create_data_manager(
+                                broker_name=data_broker_name, 
+                                symbols=symbols,
+                                data_timeframe=InternalTimeframe(data_timeframe),
+                                asset_mapper=asset_mapper
+                            )
+        self.strategy_manager = self.create_strategy_manager(
+                                    strategy_name=strategy_name,
+                                    **strategy_parameters
+                                )
         self.lookback = int(strategy_lookback)
-        self.symbols = symbols
-        self.execution_manager = self.create_execution_manager(broker_name=execution_broker_name)
-        self.execution_timeframe = InternalTimeframe(execution_timeframe)
+        self.execution_manager = self.create_execution_manager(broker_name=execution_broker_name,
+                                                               asset_mapper=asset_mapper)
+
+        self.timeframe = InternalTimeframe(data_timeframe)
         
         logger.info("Engine Manager successfully created.")
 
     @staticmethod
-    def create_data_manager(broker_name: str, data_timeframe: InternalTimeframe) -> DataManager:
+    def create_data_manager(
+        broker_name: str,
+        symbols: List[str], 
+        data_timeframe: InternalTimeframe,
+        asset_mapper: AssetMapper
+        ) -> DataManager:
         try:
             broker_credentials = {
                 "api_key": settings.api_key,
                 "secret_key": settings.secret_key.get_secret_value()
             }
-            data_manager = DataManager(broker_name=broker_name,
-                                       timeframe=data_timeframe,
-                                       **broker_credentials)
+            data_manager = DataManager(
+                            broker_name=broker_name,
+                            symbols=symbols,
+                            timeframe=data_timeframe,
+                            asset_mapper=asset_mapper,
+                            **broker_credentials
+                            )
             
             return data_manager
              
@@ -65,13 +79,15 @@ class EngineManager():
             raise
 
     @staticmethod
-    def create_execution_manager(broker_name:str) -> ExecutionManager:
+    def create_execution_manager(broker_name:str, asset_mapper: AssetMapper
+                                ) -> ExecutionManager:
         try:
             broker_credentials = {
                 "api_key": settings.api_key,
                 "secret_key": settings.secret_key.get_secret_value()
             }
             execution_manager = ExecutionManager(broker_name=broker_name,
+                                                 asset_mapper=asset_mapper,
                                                  **broker_credentials
                                                  )
             
@@ -89,19 +105,20 @@ class EngineManager():
         """
         while True:
             logger.info("Starting Run Cycle:")
-            bars = self.data_manager.get_assets_bars(symbols=self.symbols, 
-                                                     limit=self.lookback)
+            bars = self.data_manager.get_assets_bars(limit=self.lookback)
             
             weights = self.strategy_manager.call_strategy(bars=bars)
 
             logger.info(f"Weights: {weights}.")
 
-            self.execution_manager.execute(weights=weights, 
-                                           bars=bars,
-                                           timeframe=self.execution_timeframe)
+            self.execution_manager.execute(
+                                    weights=weights, 
+                                    bars=bars,
+                                    data_broker=self.data_manager.get_broker_name(),
+                                )
             
-            logger.info(f"Sleeping for: {self.execution_timeframe.value}")
-            time.sleep(self.execution_timeframe.to_seconds)
+            logger.info(f"Sleeping for: {self.timeframe.value}")
+            time.sleep(self.timeframe.to_seconds)
 
             
 
