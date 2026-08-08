@@ -1,4 +1,4 @@
-from ..common.common import InternalSide, InternalTimeframe
+from ..common.common import InternalSide
 
 class Order:
     """Internal representation of an order"""
@@ -7,12 +7,11 @@ class Order:
         self, symbol: str, 
         notional: float, 
         side: InternalSide, 
-        timeframe: InternalTimeframe):
+    ):
 
         self.symbol = symbol
         self.notional = notional
         self.side = side
-        self.timeframe = timeframe
 
     """Getters"""
     def get_symbol(self) -> str:
@@ -23,9 +22,6 @@ class Order:
     
     def get_side(self) -> InternalSide:
         return self.side
-    
-    def get_timeframe(self) -> InternalTimeframe:
-        return self.timeframe
 
     def __str__(self):
-        return f"Symbol: {self.symbol}, Notional: {self.notional}, Side: {self.side.value}, Timeframe: {self.timeframe}"
+        return f"Symbol: {self.symbol}, Notional: {self.notional}, Side: {self.side.value}"

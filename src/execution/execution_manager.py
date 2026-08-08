@@ -42,7 +42,7 @@ class ExecutionManager:
     def get_portfolio(self) -> Portfolio:
         return self.execution_broker.get_portfolio()
 
-    def execute(self, weights: Weights, bars: Dict[str, List[Bar]], timeframe: InternalTimeframe) -> None:
+    def execute(self, weights: Weights, bars: Dict[str, List[Bar]]) -> None:
         #FIXME: Handle Errors
         self.portfolio = self.get_portfolio()
 
@@ -57,7 +57,6 @@ class ExecutionManager:
         
         orders = self.convert_deltas_to_orders(positions_value=positions_value,
                                                future_values=future_values,
-                                               timeframe=timeframe,
                                                total_value=total_value
                                                ) 
 
@@ -67,7 +66,6 @@ class ExecutionManager:
     def convert_deltas_to_orders(self, 
                                  positions_value: Dict[str, float], 
                                  future_values: Dict[str, float], 
-                                 timeframe: InternalTimeframe,
                                  total_value: float
                                  ) -> List[Order]:
         orders = list()
@@ -89,7 +87,7 @@ class ExecutionManager:
             order = Order(symbol=symbol,
                           notional=delta,
                           side=side,
-                          timeframe=timeframe)
+                        )
             orders.append(order)
         return orders
 

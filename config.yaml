@@ -14,4 +14,3 @@ strategy:
 
 execution:
   broker: "Alpaca"
-  timeframe: "Minute"

@@ -10,10 +10,12 @@ from ..models.logger import Logger
 logger = Logger.logger
 
 class DataManager:
-    def __init__(self, broker_name: str, timeframe: InternalTimeframe, **parameters):
+    def __init__(self, broker_name: str, symbols: List[str], timeframe: InternalTimeframe, **parameters):
         self.data_broker = self.create_broker(broker_name=broker_name,
                                                **parameters)
+        self.symbols = symbols
         self.timeframe = timeframe
+
 
     @staticmethod
     def create_broker(broker_name: str, **parameters) -> DataBroker:
@@ -37,11 +39,12 @@ class DataManager:
             raise
 
     def get_assets_bars(self, 
-                        symbols: List[str],
                         limit: int) -> Dict[str, List[Bar]]:
 
-        bars = self.data_broker.get_assets_bars(symbols=symbols,
-                                         internal_timeframe=self.timeframe,
-                                         limit=limit)
+        bars = self.data_broker.get_assets_bars(
+                    symbols=self.symbols,
+                    internal_timeframe=self.timeframe,
+                    limit=limit
+                )
         
         return bars

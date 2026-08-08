@@ -14,7 +14,6 @@ if __name__ == "__main__":
     strategy_parameters = config["strategy"]["parameters"]
     symbols = config["strategy"]["symbols"]
     execution_broker_name = config["execution"]["broker"]
-    execution_timeframe = config["execution"]["timeframe"]
 
     asset_mapper = AssetMapper.from_json("assets.json")
 
@@ -27,7 +26,6 @@ if __name__ == "__main__":
                         strategy_parameters=strategy_parameters,
                         symbols=symbols,
                         execution_broker_name=execution_broker_name,
-                        execution_timeframe=execution_timeframe,
                     )
 
     engine_manager.start_engine()
