@@ -1,7 +1,7 @@
 import importlib
 from typing import Dict, List, Tuple
 
-from ..common import InternalSide, InternalTimeframe
+from ..common.common import InternalSide, InternalTimeframe
 from .execution_broker.execution_broker import ExecutionBroker
 from .execution_broker.mapper import BROKER_MAPPER
 from ..models.bar import Bar

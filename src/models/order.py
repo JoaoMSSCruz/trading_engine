@@ -1,4 +1,4 @@
-from ..common import InternalSide, InternalTimeframe
+from ..common.common import InternalSide, InternalTimeframe
 
 class Order:
     """Internal representation of an order"""

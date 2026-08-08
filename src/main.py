@@ -1,7 +1,10 @@
+from .common.asset_mapper import AssetMapper 
 from .config import load_config
 from .engine.engine_manager import EngineManager
 
 if __name__ == "__main__":
+    asset_mapper = AssetMapper.from_json("assets.json")
+
     config = load_config("config.yaml")
 
     data_broker_name = config["data"]["broker"]
@@ -12,16 +15,19 @@ if __name__ == "__main__":
     symbols = config["strategy"]["symbols"]
     execution_broker_name = config["execution"]["broker"]
     execution_timeframe = config["execution"]["timeframe"]
-    
 
-    engine_manager = EngineManager(data_broker_name=data_broker_name,
-                                   data_timeframe=data_timeframe,
-                                   strategy_name=strategy_name,
-                                   strategy_lookback=strategy_lookback,
-                                   strategy_parameters=strategy_parameters,
-                                   symbols=symbols,
-                                   execution_broker_name=execution_broker_name,
-                                   execution_timeframe=execution_timeframe,
-                                  )
+    asset_mapper = AssetMapper.from_json("assets.json")
+
+    engine_manager = EngineManager(
+                        asset_mapper=asset_mapper,
+                        data_broker_name=data_broker_name,
+                        data_timeframe=data_timeframe,
+                        strategy_name=strategy_name,
+                        strategy_lookback=strategy_lookback,
+                        strategy_parameters=strategy_parameters,
+                        symbols=symbols,
+                        execution_broker_name=execution_broker_name,
+                        execution_timeframe=execution_timeframe,
+                    )
 
     engine_manager.start_engine()
