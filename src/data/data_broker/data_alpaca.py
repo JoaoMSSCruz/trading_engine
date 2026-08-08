@@ -7,7 +7,7 @@ from alpaca.data.models.bars import Bar as AlpacaBar
 from alpaca.data.requests import CryptoBarsRequest
 from alpaca.data.timeframe import TimeFrame
 
-from ...common import InternalTimeframe
+from ...common.common import InternalTimeframe
 from .data_broker import DataBroker
 from ...models.bar import Bar
 from ...models.logger import Logger

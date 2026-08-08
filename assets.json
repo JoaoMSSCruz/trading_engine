@@ -1,0 +1,50 @@
+{
+  "BTC": {
+    "Alpaca": "BTC/USD",
+    "Binance": "BTCUSDT"
+  },
+  "ETH": {
+    "Alpaca": "ETH/USD",
+    "Binance": "ETHUSDT"
+  },
+  "SOL": {
+    "Alpaca": "SOL/USD",
+    "Binance": "SOLUSDT"
+  },
+  "ADA": {
+    "Alpaca": "ADA/USD",
+    "Binance": "ADAUSDT"
+  },
+  "DOGE": {
+    "Alpaca": "DOGE/USD",
+    "Binance": "DOGEUSDT"
+  },
+  "LINK": {
+    "Alpaca": "LINK/USD",
+    "Binance": "LINKUSDT"
+  },
+  "LTC": {
+    "Alpaca": "LTC/USD",
+    "Binance": "LTCUSDT"
+  },
+  "AVAX": {
+    "Alpaca": "AVAX/USD",
+    "Binance": "AVAXUSDT"
+  },
+  "UNI": {
+    "Alpaca": "UNI/USD",
+    "Binance": "UNIUSDT"
+  },
+  "BCH": {
+    "Alpaca": "BCH/USD",
+    "Binance": "BCHUSDT"
+  },
+  "DOT": {
+    "Alpaca": "DOT/USD",
+    "Binance": "DOTUSDT"
+  },
+  "MATIC": {
+    "Alpaca": "MATIC/USD",
+    "Binance": "MATICUSDT"
+  }
+}

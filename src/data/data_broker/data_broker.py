@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
-from ...common import InternalTimeframe
+from ...common.common import InternalTimeframe
 from ...models.bar import Bar
 
 class DataBroker(ABC):

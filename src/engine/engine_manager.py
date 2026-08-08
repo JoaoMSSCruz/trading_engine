@@ -2,7 +2,8 @@ import time
 from typing import Any, Dict, List
 
 from ..data.data_manager import DataManager
-from ..common import InternalTimeframe
+from ..common.asset_mapper import AssetMapper 
+from ..common.common import InternalTimeframe
 from ..config import settings
 from ..execution.execution_manager import ExecutionManager
 from ..models.logger import Logger
@@ -12,6 +13,7 @@ logger = Logger.logger
 
 class EngineManager():
     def __init__(self, 
+                asset_mapper: AssetMapper,
                 data_broker_name: str, 
                 data_timeframe: str, 
                 strategy_name: str,
@@ -21,6 +23,7 @@ class EngineManager():
                 execution_broker_name: str,
                 execution_timeframe: str,
                 ):
+        self.asset_mapper = asset_mapper
         self.data_manager = self.create_data_manager(broker_name=data_broker_name, 
                                                      data_timeframe=InternalTimeframe(data_timeframe))
         self.strategy_manager = self.create_strategy_manager(strategy_name=strategy_name,
