@@ -1,6 +1,7 @@
 import importlib
 from typing import List, Dict
 
+from ..common.asset_mapper import AssetMapper
 from ..common.common import InternalTimeframe
 from .data_broker.data_broker import DataBroker
 from .data_broker.broker_mapper import BROKER_MAPPER
@@ -10,12 +11,37 @@ from ..models.logger import Logger
 logger = Logger.logger
 
 class DataManager:
-    def __init__(self, broker_name: str, symbols: List[str], timeframe: InternalTimeframe, **parameters):
+    def __init__(self, 
+                broker_name: str, 
+                symbols: List[str], 
+                timeframe: InternalTimeframe, 
+                asset_mapper: AssetMapper,
+                **parameters
+                ) -> None:
+        """Note: For now we can only have 1 data broker"""
+        self.broker_name = broker_name
         self.data_broker = self.create_broker(broker_name=broker_name,
                                                **parameters)
-        self.symbols = symbols
+        self.symbols = self.convert_symbols(asset_mapper=asset_mapper,
+                                            symbols=symbols,
+                                            broker_name=broker_name)
+
         self.timeframe = timeframe
 
+    def get_broker_name(self) -> str:
+        return self.broker_name
+
+    @staticmethod
+    def convert_symbols(asset_mapper: AssetMapper, 
+                        symbols: List[str],
+                        broker_name: str
+                        ) -> List[str]:
+        converted_symbols = list()
+        for symbol in symbols:
+            converted_symbol = asset_mapper.get_broker_symbol(internal_asset=symbol,
+                                                              broker_name=broker_name)
+            converted_symbols.append(converted_symbol)
+        return converted_symbols
 
     @staticmethod
     def create_broker(broker_name: str, **parameters) -> DataBroker:

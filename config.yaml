@@ -9,7 +9,7 @@ strategy:
   parameters:
     threshold: 1.1
   symbols: [
-    "BTC/USD",
+    "BTC",
   ]
 
 execution:
