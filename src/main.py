@@ -1,4 +1,4 @@
-"""TODO-41: Implement asset mapper in Data Manager and Execution Manager."""
+# TODO-39: Have the Database connection done elsewhere. Perhaps in the DataManager
 
 from .common.asset_mapper import AssetMapper 
 from .config import load_config
@@ -16,6 +16,7 @@ if __name__ == "__main__":
     strategy_parameters = config["strategy"]["parameters"]
     symbols = config["strategy"]["symbols"]
     execution_broker_name = config["execution"]["broker"]
+
 
     asset_mapper = AssetMapper.from_json("assets.json")
 
