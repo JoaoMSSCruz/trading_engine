@@ -20,5 +20,24 @@ class MarketDataRepository:
                 cursor.execute(query, (timestamp, symbol, open_p, high, low, close, volume))
             conn.commit()
         finally:
-            # Liberta a ligação de volta para o pool
             self.db_manager.pool.putconn(conn)
+
+    def get_bars(self, symbol: str, lookback: int):
+            query = """
+                SELECT * FROM (
+                    SELECT timestamp, symbol, open, high, low, close, volume
+                    FROM market_bars
+                    WHERE symbol = %s
+                    ORDER BY timestamp DESC
+                    LIMIT %s
+                ) AS recent_bars
+                ORDER BY timestamp ASC;
+            """
+            
+            conn = self.db_manager.pool.getconn()
+            try:
+                with conn.cursor() as cursor:
+                    cursor.execute(query, (symbol, lookback))
+                    return cursor.fetchall()
+            finally:
+                self.db_manager.pool.putconn(conn)
