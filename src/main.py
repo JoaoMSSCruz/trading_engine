@@ -1,26 +1,11 @@
 # TODO-39: Have the Database connection done elsewhere. Perhaps in the DataManager
 
 from .common.asset_mapper import AssetMapper 
-from data.database.connection import DatabaseManager
 from .config import load_config
 from .engine.engine_manager import EngineManager
-from data.database.repository import MarketDataRepository
-import os
 
 if __name__ == "__main__":
     asset_mapper = AssetMapper.from_json("assets.json")
-
-    # FIXME-39: The whole DB handling is only temporary
-    user = os.environ["POSTGRES_USER"]
-    password = os.environ["POSTGRES_PASSWORD"]
-    db_name = os.environ["POSTGRES_DB"]
-
-    DB_URL = f"postgresql://{user}:{password}@postgres-db:5432/{db_name}"
-
-    db_manager = DatabaseManager(DB_URL)
-    db_manager.connect()
-
-    db_repository = MarketDataRepository(db_manager)
 
     config = load_config("config.yaml")
 

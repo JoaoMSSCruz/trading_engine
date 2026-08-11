@@ -3,8 +3,11 @@ from typing import List, Dict
 
 from ..common.asset_mapper import AssetMapper
 from ..common.common import InternalTimeframe
+from ..config import settings
 from .data_broker.data_broker import DataBroker
 from .data_broker.broker_mapper import BROKER_MAPPER
+from .database.connection import DatabaseManager
+from .database.repository import MarketDataRepository
 from ..models.bar import Bar
 from ..models.logger import Logger
 
@@ -27,9 +30,29 @@ class DataManager:
                                             broker_name=broker_name)
 
         self.timeframe = timeframe
+        self.database_manager = self.create_database_manager()
+        self.market_data_repository = self.create_market_data_repository(database_manager=self.database_manager) 
 
     def get_broker_name(self) -> str:
         return self.broker_name
+
+    @staticmethod
+    def create_database_manager() -> DatabaseManager:
+        database_user = settings.postgres_user
+        database_password = settings.postgres_password
+        data_base_db = settings.postgres_db
+
+        database_url = f"postgresql://{database_user}:{database_password}@postgres-db:5432/{data_base_db}"
+
+        database_manager = DatabaseManager(db_url=database_url)
+
+        database_manager.connect()
+
+        return database_manager
+
+    @staticmethod
+    def create_market_data_repository(database_manager: DatabaseManager) -> MarketDataRepository:
+        return MarketDataRepository(db_manager=database_manager)
 
     @staticmethod
     def convert_symbols(asset_mapper: AssetMapper, 
@@ -65,12 +88,28 @@ class DataManager:
             raise
 
     def get_assets_bars(self, 
-                        limit: int) -> Dict[str, List[Bar]]:
+                        limit: int
+                        ) -> Dict[str, List[Bar]]:
 
         bars = self.data_broker.get_assets_bars(
                     symbols=self.symbols,
                     internal_timeframe=self.timeframe,
                     limit=limit
                 )
+
+        for symbol_bars in bars.values():
+            self.add_bar_to_db(symbol_bars) 
         
         return bars
+
+    def add_bar_to_db(self, bars: List[Bar]) -> None:
+        for bar in bars:
+            self.market_data_repository.save_bar(
+                symbol=bar.get_symbol(),
+                timestamp=bar.get_timestamp(),
+                open_p=bar.get_open(),
+                high=bar.get_high(),
+                low=bar.get_low(),
+                close=bar.get_close(),
+                volume=bar.get_volume()
+            )
