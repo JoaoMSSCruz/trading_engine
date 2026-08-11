@@ -1,4 +1,18 @@
 services:
+  postgres-db:
+      image: postgres:15-alpine
+      container_name: postgres-db
+      restart: always
+      env_file: ./.env
+      ports:
+        - "5433:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
   trading-engine:
     image: trading-engine
     build: .
@@ -13,3 +27,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+volumes:
+  postgres_data:
