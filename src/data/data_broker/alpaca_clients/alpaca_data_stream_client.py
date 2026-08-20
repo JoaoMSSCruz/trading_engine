@@ -39,6 +39,7 @@ class AlpacaDataStreamClient(DataClient):
                                     )
 
         # FIXME: Refactor this for better architecture
+        self.subscribe()
         logger.info("Data Streams successfully created.")
 
     def subscribe(self):
@@ -55,25 +56,27 @@ class AlpacaDataStreamClient(DataClient):
          
         self.add_bar_to_buffer(bar=bar)
 
-        if self.reset_timeframe_bars == 0:
+        if self.bars_in_timeframe == 0:
             self.first_bar_event.set()
 
         logger.info(f"Received bar from asset: {bar.symbol}")
 
     async def load_warmup(self, lookback: int) -> Dict[str, List[AlpacaBar]]:
+        self.reset_bar_buffer()
         self.first_bar_event = asyncio.Event()
-        self.subscribe()
 
         while True:
             await self.first_bar_event.wait()
             
             await asyncio.sleep(5)
             
-            if self.timeframe_bars == len(self.symbols):
+            if self.bars_in_timeframe == len(self.symbols):
                 logger.info("Received all the bars for the timeframe.")
                 
+                self.reset_timeframe_bars()
                 if self.received_enough_bars(size=lookback):
                     return self.bar_buffer
+
                 
             else:
                 logger.warning("Timeout, not all symbols received a bar. Reseting bar buffer...")
@@ -81,8 +84,26 @@ class AlpacaDataStreamClient(DataClient):
                 self.reset_bar_buffer()
                 self.first_bar_event.clear() 
 
-    def get_latest(self) -> Dict[str, Any]:
+    async def get_latest(self) -> Dict[str, Any]:
         #TODO: Implement this
+        self.reset_bar_buffer()
+        self.first_bar_event = asyncio.Event()
+
+        await self.first_bar_event.wait()
+
+        await asyncio.sleep(5)
+
+        if self.bars_in_timeframe == len(self.symbols):
+            logger.info("Received all the bars for the timeframe.")
+            
+            self.reset_timeframe_bars()
+            return self.bar_buffer
+        else:
+            logger.warning("Timeout, not all symbols received a bar. Reseting bar buffer...")
+            
+            self.reset_bar_buffer()
+            self.first_bar_event.clear() 
+
         return {}
 
 
@@ -98,7 +119,7 @@ class AlpacaDataStreamClient(DataClient):
     def reset_bar_buffer(self):
         self.bar_buffer = dict()
 
-        """This variable counts the ammount of bars received in the timeframe (1 minuto),
+        """This variable counts the ammount of bars received in the timeframe (1 minute),
         plus a threshold (5 seconds)"""
         self.reset_timeframe_bars()
 
@@ -110,9 +131,9 @@ class AlpacaDataStreamClient(DataClient):
         return True
 
     def increment_timeframe_bars(self):
-        self.timeframe_bars += 1
+        self.bars_in_timeframe += 1
 
     def reset_timeframe_bars(self):
-        self.timeframe_bars = 0
+        self.bars_in_timeframe = 0
 
         
